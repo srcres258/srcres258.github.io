@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkneoforged_docs=self.webpackChunkneoforged_docs||[]).push([[7832],{7285:e=>{e.exports=JSON.parse('{"name":"docusaurus-plugin-content-docs","id":"neogradle"}')}}]);
