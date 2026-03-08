@@ -1336,7 +1336,7 @@ pre code {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #ff169c;
+  background: #12ffd2;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -1958,7 +1958,7 @@ pre code {
   width: 4px;
 }
 .post-body {
-  font-family: LXGW WenKai TC, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: LXGW WenKai, Cascadia Mono, system-ui, sans-serif, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   overflow-wrap: break-word;
 }
 @media (min-width: 1200px) {
@@ -2147,7 +2147,7 @@ pre code {
 }
 .posts-expand .post-meta-container {
   color: #999;
-  font-family: LXGW WenKai TC, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: LXGW WenKai, Cascadia Mono, system-ui, sans-serif, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 0.75em;
   margin-top: 3px;
 }
@@ -2747,4 +2747,18 @@ header.header {
   .sidebar-active .footer-fixed {
     left: 320px;
   }
+}
+@font-face {
+  font-family: "LXGW WenKai";
+  src: url("/fonts/LXGWWenKai-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cascadia Mono";
+  src: url("/fonts/CascadiaMono.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
