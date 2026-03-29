@@ -25,13 +25,13 @@
 
 
 
-<link rel="canonical" href="https://blog.srcres258.top/2026/03/26/vim-shortcuts/">
+<link rel="canonical" href="https://blog.srcres258.top/2026/03/29/gdb-commands/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.srcres258.top/2026/03/26/vim-shortcuts/","path":"2026/03/26/vim-shortcuts/","title":"Vim 常见快捷键收集"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.srcres258.top/2026/03/29/gdb-commands/","path":"2026/03/29/gdb-commands/","title":"GDB 常用命令收集"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Vim 常见快捷键收集 | 吐哺</title>
+<title>GDB 常用命令收集 | 吐哺</title>
   
 
 
@@ -68,7 +68,7 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/3.0.1/quicklink.umd.js" integrity="sha256-44BednzIpUeQJcY8qtLyarFu0UCCTbgmWOvaoehiFQQ=" crossorigin="anonymous" defer></script>
-  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":false,"archive":false,"delay":true,"timeout":3000,"priority":true,"url":"https://blog.srcres258.top/2026/03/26/vim-shortcuts/"}</script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":false,"archive":false,"delay":true,"timeout":3000,"priority":true,"url":"https://blog.srcres258.top/2026/03/29/gdb-commands/"}</script>
   <script src="/js/third-party/quicklink.js" defer></script>
 
   <noscript>
@@ -135,7 +135,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%A5%E9%97%A8%E7%BA%A7%E5%88%AB%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%9F%E5%AD%98%E6%8A%80%E8%83%BD%EF%BC%8C%E6%97%A5%E5%B8%B8%E7%BC%96%E8%BE%91%E5%A4%9F%E7%94%A8%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">1. 入门级别（基础生存技能，日常编辑够用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%BF%9B%E9%98%B6%E7%BA%A7%E5%88%AB%EF%BC%88%E6%95%88%E7%8E%87%E6%8F%90%E5%8D%87%EF%BC%8C%E5%B8%B8%E7%94%A8%E6%96%87%E6%9C%AC%E5%AF%B9%E8%B1%A1%E4%B8%8E%E7%AA%97%E5%8F%A3%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">2. 进阶级别（效率提升，常用文本对象与窗口）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%93%E5%AE%B6%E7%BA%A7%E5%88%AB%EF%BC%88%E9%AB%98%E7%BA%A7%E6%8A%80%E5%B7%A7%EF%BC%8C%E5%AE%8F%E3%80%81%E5%AF%84%E5%AD%98%E5%99%A8%E3%80%81%E5%BF%AB%E9%80%9F%E4%BF%AE%E5%A4%8D%E7%AD%89%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">3. 专家级别（高级技巧，宏、寄存器、快速修复等）</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%89%8D%E6%8F%90"><span class="nav-number">1.</span> <span class="nav-text">使用前提</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A5%E9%97%A8%E7%BA%A7%E5%88%AB%EF%BC%88%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%EF%BC%8C%E9%80%82%E5%90%88%E6%96%B0%E6%89%8B%E6%97%A5%E5%B8%B8%E8%B0%83%E8%AF%95%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">入门级别（基础操作，适合新手日常调试）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E9%98%B6%E7%BA%A7%E5%88%AB%EF%BC%88%E6%9D%A1%E4%BB%B6%E6%96%AD%E7%82%B9%E3%80%81%E8%A7%82%E5%AF%9F%E7%82%B9%E3%80%81%E5%86%85%E5%AD%98%E6%A3%80%E6%9F%A5%E7%AD%89%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">进阶级别（条件断点、观察点、内存检查等）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%93%E5%AE%B6%E7%BA%A7%E5%88%AB%EF%BC%88%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7%E3%80%81%E5%8F%8D%E6%B1%87%E7%BC%96%E3%80%81%E8%84%9A%E6%9C%AC%E3%80%81%E5%BA%95%E5%B1%82%E8%B0%83%E8%AF%95%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">专家级别（高级特性、反汇编、脚本、底层调试）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%87%E6%B3%A8"><span class="nav-number">5.</span> <span class="nav-text">备注</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -190,7 +190,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.srcres258.top/2026/03/26/vim-shortcuts/">
+    <link itemprop="mainEntityOfPage" href="https://blog.srcres258.top/2026/03/29/gdb-commands/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -203,12 +203,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Vim 常见快捷键收集 | 吐哺">
+      <meta itemprop="name" content="GDB 常用命令收集 | 吐哺">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Vim 常见快捷键收集
+          GDB 常用命令收集
         </h1>
 
         <div class="post-meta-container">
@@ -218,15 +218,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2026-03-26 21:01:32" itemprop="dateCreated datePublished" datetime="2026-03-26T21:01:32+08:00">2026-03-26</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-03-29 12:03:17" itemprop="dateModified" datetime="2026-03-29T12:03:17+08:00">2026-03-29</time>
+      <time title="创建时间：2026-03-29 12:02:57 / 修改时间：12:06:38" itemprop="dateCreated datePublished" datetime="2026-03-29T12:02:57+08:00">2026-03-29</time>
     </span>
 
   
@@ -238,166 +232,139 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>此处收集个人平时可能用到的一些 Vim 常用快捷键以备随时查阅。</p>
+    <div class="post-body" itemprop="articleBody"><p>此处收集个人平时可能用到的一些 GDB 常用调试命令, 以备随时查阅.</p>
 <span id="more"></span>
 
-<h3 id="1-入门级别（基础生存技能，日常编辑够用）"><a href="#1-入门级别（基础生存技能，日常编辑够用）" class="headerlink" title="1. 入门级别（基础生存技能，日常编辑够用）"></a>1. 入门级别（基础生存技能，日常编辑够用）</h3><p>按键类型：移动、插入、删除、保存退出、简单搜索。</p>
-<p><strong>模式切换与基本操作：</strong></p>
+<h1 id="使用前提"><a href="#使用前提" class="headerlink" title="使用前提"></a>使用前提</h1><p>编译程序时需添加调试信息 <code>-g</code>（推荐 <code>-g -O0</code>），例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -g -o prog prog.c</span><br></pre></td></tr></table></figure>
+
+<p>启动 GDB：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gdb ./prog</span><br><span class="line"># 或 gdb --args ./prog arg1 arg2</span><br><span class="line"># 或 gdb -tui ./prog （启用文本界面 TUI）</span><br></pre></td></tr></table></figure>
+
+<h1 id="入门级别（基础操作，适合新手日常调试）"><a href="#入门级别（基础操作，适合新手日常调试）" class="headerlink" title="入门级别（基础操作，适合新手日常调试）"></a>入门级别（基础操作，适合新手日常调试）</h1><p>这些命令覆盖启动、运行、断点、单步执行、查看变量和退出等最常用场景。</p>
+<p><strong>启动与退出</strong></p>
 <ul>
-<li><strong>Esc</strong> 或 <strong>Ctrl + [</strong>：退出 Insert 模式，返回 Normal</li>
-<li><strong>i</strong>：在光标前进入 Insert 模式（插入）</li>
-<li><strong>I</strong>：行首插入</li>
-<li><strong>a</strong>：光标后追加</li>
-<li><strong>A</strong>：行尾追加</li>
-<li><strong>o</strong>：当前行下方新开一行并插入</li>
-<li><strong>O</strong>：当前行上方新开一行并插入</li>
-<li><strong>:w</strong>：保存文件</li>
-<li><strong>:q</strong>：退出（未修改时）</li>
-<li><strong>:q!</strong>：强制退出不保存</li>
-<li><strong>:wq</strong> 或 <strong>ZZ</strong>：保存并退出</li>
-<li><strong>u</strong>：撤销（Undo）</li>
-<li><strong>Ctrl + r</strong>：重做（Redo）</li>
-<li><strong>.</strong>：重复上一个命令</li>
+<li><code>gdb ./prog</code>：启动 GDB 并加载程序</li>
+<li><code>run</code> &#x2F; <code>r [参数]</code>：运行程序（可带命令行参数）</li>
+<li><code>quit</code> &#x2F; <code>q</code>：退出 GDB</li>
+<li><code>kill</code>：终止当前运行的程序</li>
 </ul>
-<p><strong>光标移动（Normal 模式）：</strong></p>
+<p><strong>断点管理</strong></p>
 <ul>
-<li><strong>h j k l</strong>：左 下 上 右（推荐替代方向键）</li>
-<li><strong>w &#x2F; b</strong>：下一个&#x2F;上一个单词开头</li>
-<li><strong>e &#x2F; ge</strong>：单词结尾</li>
-<li><strong>0 &#x2F; ^</strong>：行首（^ 为非空白字符开头）</li>
-<li><strong>$</strong>：行尾</li>
-<li><strong>gg &#x2F; G</strong>：文件第一行 &#x2F; 最后一行</li>
-<li><strong>Ctrl + f &#x2F; b</strong>：向下&#x2F;向上翻页</li>
-<li><strong>Ctrl + d &#x2F; u</strong>：向下&#x2F;向上半页</li>
+<li><code>break</code> &#x2F; <code>b main</code> 或 <code>b 文件:行号</code> 或 <code>b 函数名</code>：设置断点</li>
+<li><code>info breakpoints</code> &#x2F; <code>i b</code>：查看所有断点</li>
+<li><code>delete</code> &#x2F; <code>d [断点号]</code>：删除断点（无参数删除所有）</li>
+<li><code>disable/enable [断点号]</code>：禁用&#x2F;启用断点</li>
+<li><code>clear [行号/函数]</code>：清除指定位置的断点</li>
 </ul>
-<p><strong>编辑与删除：</strong></p>
+<p><strong>运行控制与单步</strong></p>
 <ul>
-<li><strong>x</strong>：删除当前字符</li>
-<li><strong>dd</strong>：删除当前行</li>
-<li><strong>dw</strong>：删除当前单词</li>
-<li><strong>yy</strong>（或 <strong>Y</strong>）：复制当前行（yank）</li>
-<li><strong>p &#x2F; P</strong>：粘贴到光标后&#x2F;前</li>
-<li><strong>r</strong>：替换单个字符（不进入 Insert）</li>
-<li><strong>J</strong>：合并当前行与下一行</li>
+<li><code>continue</code> &#x2F; <code>c</code>：继续运行直到下一个断点</li>
+<li><code>next</code> &#x2F; <code>n</code>：执行下一行（不进入函数，step over）</li>
+<li><code>step</code> &#x2F; <code>s</code>：执行下一行（进入函数，step into）</li>
+<li><code>finish</code> &#x2F; <code>fin</code>：运行直到当前函数返回</li>
+<li><code>until</code> &#x2F; <code>u [行号]</code>：运行直到指定行或退出循环</li>
 </ul>
-<p><strong>搜索与替换：</strong></p>
+<p><strong>查看信息</strong></p>
 <ul>
-<li><strong>&#x2F;</strong>：向前搜索（输入后按 Enter）</li>
-<li><strong>?</strong>：向后搜索</li>
-<li><strong>n &#x2F; N</strong>：下一个&#x2F;上一个匹配</li>
-<li><strong>:s&#x2F;old&#x2F;new</strong>：当前行替换（加 <strong>g</strong> 全行替换，如 <strong>:s&#x2F;old&#x2F;new&#x2F;g</strong>）</li>
-<li><strong>:%s&#x2F;old&#x2F;new&#x2F;g</strong>：全文替换</li>
+<li><code>print</code> &#x2F; <code>p 变量</code> 或 <code>p 表达式</code>：打印变量&#x2F;表达式值（支持 C 表达式）</li>
+<li><code>backtrace</code> &#x2F; <code>bt</code> 或 <code>where</code>：显示调用栈（堆栈回溯）</li>
+<li><code>frame</code> &#x2F; <code>f [帧号]</code>：切换到指定栈帧</li>
+<li><code>list</code> &#x2F; <code>l [行号]</code>：显示源代码</li>
 </ul>
-<p><strong>其他常用：</strong></p>
+<p><strong>其他基础</strong></p>
 <ul>
-<li><strong>:set number</strong>（或 <strong>:set nu</strong>）：显示行号</li>
-<li><strong>:set nonumber</strong>：隐藏行号</li>
-<li><strong>:help 关键字</strong>：打开帮助（如 <strong>:help w</strong>）</li>
+<li><code>help [命令]</code>：显示帮助</li>
+<li><code>apropos 关键词</code>：搜索相关命令</li>
 </ul>
-<p>这些足够应对 80% 的日常编辑。记住“动词 + 名词”思维：如 <strong>d w</strong>（删除单词）、<strong>y y</strong>（复制行）。</p>
-<h3 id="2-进阶级别（效率提升，常用文本对象与窗口）"><a href="#2-进阶级别（效率提升，常用文本对象与窗口）" class="headerlink" title="2. 进阶级别（效率提升，常用文本对象与窗口）"></a>2. 进阶级别（效率提升，常用文本对象与窗口）</h3><p>按键类型：掌握文本对象（text objects）和多窗口&#x2F;缓冲区操作，能显著提高速度。</p>
-<p><strong>文本对象（非常强大，与操作符结合使用，如 d&#x2F;ciw）：</strong></p>
+<p>入门建议：先用 <code>break main</code> 设置入口断点，<code>run</code> 运行，遇到问题用 <code>bt</code> 看栈、<code>p</code> 看变量、<code>n/s</code> 单步。</p>
+<h1 id="进阶级别（条件断点、观察点、内存检查等）"><a href="#进阶级别（条件断点、观察点、内存检查等）" class="headerlink" title="进阶级别（条件断点、观察点、内存检查等）"></a>进阶级别（条件断点、观察点、内存检查等）</h1><p>这些命令帮助处理更复杂的调试场景，如变量变化监控、内存查看、寄存器等。</p>
+<p><strong>条件断点与观察点（Watchpoints）</strong></p>
 <ul>
-<li><strong>iw &#x2F; aw</strong>：inner word &#x2F; a word（词内&#x2F;词，包括空格）</li>
-<li><strong>i( &#x2F; a(</strong> 或 <strong>i) &#x2F; a)</strong>：括号内&#x2F;外</li>
-<li><strong>i{ &#x2F; a{</strong>、<strong>i[ &#x2F; a[</strong> 等：各种括号&#x2F;引号内&#x2F;外</li>
-<li><strong>it &#x2F; at</strong>：HTML&#x2F;XML 标签内&#x2F;外</li>
-<li><strong>ip &#x2F; ap</strong>：段落内&#x2F;外</li>
+<li><code>break 位置 if 条件</code>：条件断点（例如 <code>b 10 if x &gt; 5</code>）</li>
+<li><code>condition 断点号 条件</code>：为已有断点添加&#x2F;修改条件</li>
+<li><code>watch 变量/表达式</code>：设置观察点（变量值变化时停止）</li>
+<li><code>awatch</code>：读写观察点；<code>rwatch</code>：只读观察点</li>
+<li><code>info watchpoints</code>：查看观察点</li>
 </ul>
-<p>示例：</p>
+<p><strong>自动显示与格式化输出</strong></p>
 <ul>
-<li><strong>ciw</strong>：修改当前单词（change inner word）</li>
-<li><strong>di(</strong>：删除括号内内容</li>
-<li><strong>yi”</strong>：复制双引号内内容</li>
-<li><strong>va{</strong>：可视选中大括号外内容</li>
+<li><code>display /格式 表达式</code>：每次停止时自动打印（例如 <code>display/x var</code>）</li>
+<li><code>undisplay [编号]</code>：取消自动显示</li>
+<li><code>print /格式 表达式</code>：格式化打印（如 <code>/x</code> 十六进制、<code>/d</code> 十进制、<code>/s</code> 字符串、<code>/c</code> 字符）</li>
+<li><code>x /nfu 地址</code>：检查内存（n&#x3D;数量，f&#x3D;格式如 x&#x2F;d&#x2F;s，u&#x3D;单位如 b&#x2F;h&#x2F;w&#x2F;g）</li>
 </ul>
-<p><strong>Visual 模式（选中操作）：</strong></p>
+<p><strong>栈与线程</strong></p>
 <ul>
-<li><strong>v</strong>：字符可视模式</li>
-<li><strong>V</strong>：行可视模式</li>
-<li><strong>Ctrl + v</strong>：块可视模式（列编辑神器）</li>
-<li>在 Visual 中可配合 <strong>d</strong> 删除、<strong>y</strong> 复制、<strong>&gt;</strong> 缩进等</li>
+<li><code>backtrace full</code>：显示栈帧及局部变量</li>
+<li><code>info args</code>：显示当前函数参数</li>
+<li><code>info locals</code>：显示当前函数局部变量</li>
+<li><code>info threads</code>：查看线程</li>
+<li><code>thread [线程号]</code>：切换线程</li>
 </ul>
-<p><strong>窗口与缓冲区（多文件编辑）：</strong></p>
+<p><strong>修改执行</strong></p>
 <ul>
-<li><strong>:sp</strong> 或 <strong>:split</strong>：水平分割窗口</li>
-<li><strong>:vs</strong> 或 <strong>:vsplit</strong>：垂直分割</li>
-<li><strong>Ctrl + w w</strong>：切换窗口</li>
-<li><strong>Ctrl + w q</strong>：关闭当前窗口</li>
-<li><strong>:e 文件名</strong>：打开&#x2F;切换文件（缓冲区）</li>
-<li><strong>:bn &#x2F; :bp</strong>：下一个&#x2F;上一个缓冲区</li>
-<li><strong>:ls</strong>：列出所有缓冲区</li>
-<li><strong>:bd</strong>：关闭当前缓冲区</li>
+<li><code>set var 变量 = 值</code>：修改变量值</li>
+<li><code>return [值]</code>：强制当前函数返回（可指定返回值）</li>
+<li><code>jump 行号/地址</code>：跳转执行到指定位置</li>
 </ul>
-<p><strong>高级移动与标记：</strong></p>
+<p><strong>TUI 文本界面（推荐）</strong></p>
 <ul>
-<li><strong>H &#x2F; M &#x2F; L</strong>：屏幕顶部&#x2F;中间&#x2F;底部</li>
-<li><strong>{ &#x2F; }</strong>：上一个&#x2F;下一个段落</li>
-<li><strong>%</strong>：跳转匹配括号</li>
-<li><strong>m{a-z}</strong>：设置标记（如 <strong>ma</strong>）</li>
-<li><strong>‘a</strong>：跳转到标记 a 的行首</li>
-<li><strong>&#96;&#96;</strong>：回到上一个跳转位置</li>
-<li><strong>Ctrl + o &#x2F; Ctrl + i</strong>：跳转历史前后</li>
+<li><code>tui enable</code> 或启动时 <code>gdb -tui</code>：进入 TUI 模式（Ctrl+x a 切换）</li>
+<li><code>layout src/asm/split/regs</code>：切换布局（源码&#x2F;汇编&#x2F;拆分&#x2F;寄存器）</li>
+<li><code>focus src/asm/regs</code>：切换焦点窗口</li>
 </ul>
-<p><strong>搜索替换进阶：</strong></p>
+<p>进阶建议：用条件断点减少无关暂停，用 <code>watch</code> 监控关键变量变化，用 <code>x</code> 检查指针&#x2F;内存错误。</p>
+<h1 id="专家级别（高级特性、反汇编、脚本、底层调试）"><a href="#专家级别（高级特性、反汇编、脚本、底层调试）" class="headerlink" title="专家级别（高级特性、反汇编、脚本、底层调试）"></a>专家级别（高级特性、反汇编、脚本、底层调试）</h1><p>这些适合复杂程序、多线程、逆向、性能分析或自动化调试。</p>
+<p><strong>反汇编与底层</strong></p>
 <ul>
-<li><strong>:range s&#x2F;old&#x2F;new&#x2F;g</strong>（range 如 <strong>1,10</strong> 或 <strong>%</strong> 全文件）</li>
-<li><strong>:g&#x2F;pattern&#x2F;command</strong>：对匹配 pattern 的行执行 command（如 <strong>:g&#x2F;foo&#x2F;d</strong> 删除含 foo 的行）</li>
-<li><strong>* &#x2F; #</strong>：搜索光标下单词（向前&#x2F;向后）</li>
+<li><code>disassemble</code> &#x2F; <code>disas [函数/地址]</code>：反汇编函数或范围</li>
+<li><code>stepi</code> &#x2F; <code>si</code>、<code>nexti</code> &#x2F; <code>ni</code>：单步汇编指令（step into&#x2F;over）</li>
+<li><code>info registers</code> &#x2F; <code>i r</code>：查看寄存器（<code>info all-registers</code> 更多）</li>
+<li><code>set {类型}地址 = 值</code>：直接修改内存（如 <code>set {int}0xaddr = 5</code>）</li>
 </ul>
-<p><strong>其他实用：</strong></p>
+<p><strong>高级断点与命令列表</strong></p>
 <ul>
-<li><strong>&gt;&gt; &#x2F; &lt;&lt;</strong>：缩进&#x2F;反缩进当前行</li>
-<li><strong>&gt; &#x2F; &lt;</strong> 在 Visual 模式下缩进选中块</li>
-<li><strong>:set hlsearch</strong>：高亮搜索结果</li>
+<li><code>break *地址</code>：在机器地址设置断点</li>
+<li><code>commands 断点号</code>：为断点附加命令列表（<code>silent</code> 静默、<code>continue</code> 等，<code>end</code> 结束）</li>
+<li><code>catch [signal/throw 等]</code>：捕获信号、异常等事件</li>
+<li><code>tbreak</code>：临时断点（命中一次后自动删除）</li>
 </ul>
-<h3 id="3-专家级别（高级技巧，宏、寄存器、快速修复等）"><a href="#3-专家级别（高级技巧，宏、寄存器、快速修复等）" class="headerlink" title="3. 专家级别（高级技巧，宏、寄存器、快速修复等）"></a>3. 专家级别（高级技巧，宏、寄存器、快速修复等）</h3><p>按键类型：这些适合重度用户，能实现复杂批量操作和自定义。</p>
-<p><strong>宏（Macro，录制重复操作）：</strong></p>
+<p><strong>逆向调试与历史</strong></p>
 <ul>
-<li><strong>qa</strong>：开始录制宏到寄存器 a（q 停止录制）</li>
-<li><strong>@a</strong>：执行宏 a</li>
-<li><strong>@@</strong>：重复上一个宏</li>
-<li>可录制复杂序列，如格式化多行代码</li>
+<li><code>reverse-step</code> &#x2F; <code>rs</code>、<code>reverse-next</code> &#x2F; <code>rn</code> 等：反向单步（需支持记录）</li>
+<li><code>record</code> &#x2F; <code>record full</code>：开启执行记录（然后可逆向调试）</li>
+<li><code>checkpoint</code> &#x2F; <code>restart</code>：检查点保存&#x2F;恢复状态</li>
 </ul>
-<p><strong>寄存器（Registers，高级复制粘贴）：</strong></p>
+<p><strong>多线程与信号</strong></p>
 <ul>
-<li><strong>“ayy</strong>：复制到寄存器 a（”a 后跟 yank）</li>
-<li><strong>“ap</strong>：从寄存器 a 粘贴</li>
-<li>**”+y &#x2F; “<em>y</em>*：复制到系统剪贴板（需 +clipboard 支持）</li>
-<li><strong>:registers</strong>：查看所有寄存器</li>
+<li><code>thread apply all 命令</code>：对所有线程执行命令</li>
+<li><code>handle 信号</code>：控制信号处理（如 <code>handle SIGINT nopass</code>）</li>
+<li><code>info inferiors</code>：查看多个调试目标</li>
 </ul>
-<p><strong>快速修复列表（Quickfix）与搜索多文件：</strong></p>
+<p><strong>脚本与自定义</strong></p>
 <ul>
-<li>**:vimgrep &#x2F;pattern&#x2F; ** 或 <strong>:grep</strong>：在多文件中搜索</li>
-<li><strong>:copen</strong>：打开 quickfix 列表</li>
-<li><strong>:cnext &#x2F; :cprev</strong>：跳转下一个&#x2F;上一个匹配</li>
+<li><code>source 脚本文件</code>：加载 GDB 脚本（.gdbinit 自动加载）</li>
+<li><code>define 命令名</code>：自定义新命令（<code>end</code> 结束）</li>
+<li><code>set pagination off</code>：关闭分页（适合脚本）</li>
+<li><code>set print pretty on</code>：美化结构体打印</li>
+<li><code>set logging on</code>：日志记录 GDB 输出</li>
 </ul>
-<p><strong>全局命令与范围：</strong></p>
+<p><strong>其他专家特性</strong></p>
 <ul>
-<li><strong>:g</strong>（global）：强大批量操作</li>
-<li><strong>:norm command</strong>：对范围行执行 Normal 命令（如 <strong>:%norm g~~</strong> 大小写翻转全文件）</li>
-<li><strong>:set list</strong>：显示不可见字符（如 Tab、空格）</li>
+<li><code>info functions/variables/types</code>：查看程序符号</li>
+<li><code>maintenance</code> 命令组：底层维护（如内存检查）</li>
+<li><code>python</code> &#x2F; <code>guile</code>：嵌入 Python 等脚本扩展</li>
+<li><code>attach PID</code>：附加到运行中的进程</li>
+<li><code>core-file 核心转储</code>：调试崩溃转储文件</li>
 </ul>
-<p><strong>插入模式高级技巧：</strong></p>
-<ul>
-<li><strong>Ctrl + r “</strong>：插入默认寄存器内容</li>
-<li><strong>Ctrl + r &#x3D;</strong>：插入 Vim 表达式计算结果（如 <strong>Ctrl + r &#x3D;2+3</strong>）</li>
-<li><strong>Ctrl + n &#x2F; p</strong>：自动补全（单词）</li>
-</ul>
-<p><strong>其他专家操作：</strong></p>
-<ul>
-<li><strong>:set paste</strong>：进入粘贴模式（避免自动缩进问题）</li>
-<li><strong>gv</strong>：重新选中上一次 Visual 区域</li>
-<li><strong>:marks</strong>：查看所有标记</li>
-<li><strong>:changes</strong>：查看更改历史</li>
-<li><strong>:tabnew &#x2F; :tabn &#x2F; :tabp</strong>：标签页管理</li>
-<li><strong>Ctrl + a &#x2F; Ctrl + x</strong>：递增&#x2F;递减光标下数字</li>
-<li><strong>:diffthis</strong>：进入 diff 模式比较文件</li>
-</ul>
-<p><strong>自定义与配置提示（.vimrc）：</strong></p>
-<ul>
-<li>常用设置：<strong>set number relativenumber</strong>（相对行号）、<strong>set ignorecase smartcase</strong>（智能搜索）、<strong>syntax on</strong> 等。</li>
-<li>映射快捷键：如 <strong>nnoremap <leader>w :w<CR></strong>（leader 通常为空格或 \）。</li>
+<p>专家建议：结合 <code>.gdbinit</code> 自定义环境；用 <code>commands</code> 自动化断点行为；对于多线程&#x2F;复杂程序，熟练 TUI + 寄存器 + 反汇编；大型项目可结合 <code>valgrind</code> 或其他工具互补。</p>
+<h1 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h1><ul>
+<li>大多数命令可缩写到不冲突的前几个字母（如 <code>info break</code> → <code>i b</code>）。</li>
+<li><code>Ctrl + L</code>：刷新屏幕（TUI 乱码时有用）。</li>
+<li><code>set args ...</code>：在 GDB 内设置运行参数。</li>
+<li>内存泄漏&#x2F;段错误常用：<code>bt</code> + <code>p</code> + <code>x</code> 检查指针。</li>
+<li>更多细节始终可用 <code>help</code> 或官方文档（<code>info gdb</code> 在系统中）。</li>
 </ul>
 
     </div>
@@ -416,7 +383,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://blog.srcres258.top/2026/03/26/vim-shortcuts/" title="Vim 常见快捷键收集">https://blog.srcres258.top/2026/03/26/vim-shortcuts/</a>
+      <a href="https://blog.srcres258.top/2026/03/29/gdb-commands/" title="GDB 常用命令收集">https://blog.srcres258.top/2026/03/29/gdb-commands/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LzQuMC9kZWVkLnpoLWhhbnM="><i class="fab fa-fw fa-creative-commons"></i>BY</span> 许可协议。转载请注明出处！
@@ -450,14 +417,11 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/03/21/kysx-djwqx/" rel="prev" title="常用等价无穷小收集">
-                  <i class="fa fa-angle-left"></i> 常用等价无穷小收集
+                <a href="/2026/03/27/math-recitation/" rel="prev" title="数学每日背诵内容">
+                  <i class="fa fa-angle-left"></i> 数学每日背诵内容
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/03/27/openclaw-install/" rel="next" title="openclaw-install">
-                  openclaw-install <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>

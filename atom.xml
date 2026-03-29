@@ -11,7 +11,22 @@
   <rights>All rights reserved 2026, 吐哺</rights>
   <subtitle>srcres258</subtitle>
   <title>吐哺</title>
-  <updated>2026-03-28T02:17:03.810Z</updated>
+  <updated>2026-03-29T04:06:38.660Z</updated>
+  <entry>
+    <author>
+      <name>吐哺</name>
+    </author>
+    <category term="技巧" scheme="https://blog.srcres258.top/tags/%E6%8A%80%E5%B7%A7/"/>
+    <category term="工具" scheme="https://blog.srcres258.top/tags/%E5%B7%A5%E5%85%B7/"/>
+    <id>https://blog.srcres258.top/2026/03/29/gdb-commands/</id>
+    <link href="https://blog.srcres258.top/2026/03/29/gdb-commands/"/>
+    <published>2026-03-29T04:02:57.000Z</published>
+    <summary>
+      <![CDATA[<p>此处收集个人平时可能用到的一些 GDB 常用调试命令, 以备随时查阅.</p>]]>
+    </summary>
+    <title>GDB 常用命令收集</title>
+    <updated>2026-03-29T04:06:38.660Z</updated>
+  </entry>
   <entry>
     <author>
       <name>吐哺</name>
@@ -48,11 +63,10 @@
     <link href="https://blog.srcres258.top/2026/03/26/vim-shortcuts/"/>
     <published>2026-03-26T13:01:32.000Z</published>
     <summary>
-      <![CDATA[<p>此处收集个人平时可能用到的一些 Vim 常用快捷键以备随时查阅。</p>
-<h3 id="1-入门级别（基础生存技能，日常编辑够用）"><a href="#1-入门级别（基础生存技能，日常编辑够用）" class="headerlink" title="1. 入门级别（基础生存技能，日常编辑够用）"></a>1. 入门级别（基础生存技能，日常编辑够用）</h3><p>按键类型：移动、插入、删除、保存退出、简单搜索。</p>]]>
+      <![CDATA[<p>此处收集个人平时可能用到的一些 Vim 常用快捷键以备随时查阅。</p>]]>
     </summary>
     <title>Vim 常见快捷键收集</title>
-    <updated>2026-03-26T13:04:44.737Z</updated>
+    <updated>2026-03-29T04:03:17.883Z</updated>
   </entry>
   <entry>
     <author>
