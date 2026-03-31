@@ -11,7 +11,23 @@
   <rights>All rights reserved 2026, 吐哺</rights>
   <subtitle>srcres258</subtitle>
   <title>吐哺</title>
-  <updated>2026-03-29T04:06:38.660Z</updated>
+  <updated>2026-03-31T13:04:32.310Z</updated>
+  <entry>
+    <author>
+      <name>吐哺</name>
+    </author>
+    <category term="操作系统" scheme="https://blog.srcres258.top/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+    <category term="学习" scheme="https://blog.srcres258.top/tags/%E5%AD%A6%E4%B9%A0/"/>
+    <id>https://blog.srcres258.top/2026/03/31/jyy-os-lab-m1/</id>
+    <link href="https://blog.srcres258.top/2026/03/31/jyy-os-lab-m1/"/>
+    <published>2026-03-31T03:19:49.000Z</published>
+    <summary>
+      <![CDATA[<p>学习 jyy 老师的 <span class="exturl" data-url="aHR0cHM6Ly9qeXl3aWtpLmNuL09TLzIwMjYvbGFicy9NMS5tZA==">2026 年度 OS 课程<i class="fa fa-external-link-alt"></i></span>, 开始完成老师布置的各 lab. 这篇 blog 记录我完成第一个
+lab 的过程.</p>]]>
+    </summary>
+    <title>JYY OS 2026 Lab M1 - 迷宫游戏 (labyrinth)</title>
+    <updated>2026-03-31T13:04:32.310Z</updated>
+  </entry>
   <entry>
     <author>
       <name>吐哺</name>
