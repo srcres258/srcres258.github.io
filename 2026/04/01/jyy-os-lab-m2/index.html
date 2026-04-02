@@ -218,9 +218,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-04-01 12:35:48 / 修改时间：22:14:38" itemprop="dateCreated datePublished" datetime="2026-04-01T12:35:48+08:00">2026-04-01</time>
+      <time title="创建时间：2026-04-01 12:35:48" itemprop="dateCreated datePublished" datetime="2026-04-01T12:35:48+08:00">2026-04-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-04-02 21:23:07" itemprop="dateModified" datetime="2026-04-02T21:23:07+08:00">2026-04-02</time>
     </span>
 
   
@@ -230,14 +236,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.2k</span>
+      <span>3.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>12 分钟</span>
+      <span>13 分钟</span>
     </span>
 </div>
 
@@ -588,7 +594,14 @@
 </ul>
 </li>
 </ol>
-<h1 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h1><p>TODO</p>
+<h1 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h1><p>本次 jyy 操作系统课程 M2 实验成功实现了一个功能完整的 <code>pstree</code> 命令行工具，能够以树状结构展示 Linux 系
+统中的进程父子关系。通过深入理解 <code>/proc</code> 文件系统，我设计了高效的进程信息读取机制，构建了基于 <code>Process</code>结构体的进程树数据模型，并实现了灵活的命令行参数解析系统，支持 <code>-p/--show-pids</code>（显示进程号）、<code>-n/--numeric-sort</code>（按 PID 排序）和 <code>-V/--version</code>（显示版本信息）等核心功能。</p>
+<p>在实现过程中，我采用了模块化的设计思路：首先通过遍历 <code>/proc</code> 目录读取所有进程的 PID、PPID 和进程名信息
+；然后根据父子关系构建进程树，其中根进程通常为 PID 1 的 systemd；接着根据用户指定的选项对子进程进行排序
+并格式化输出。打印逻辑采用递归方式，通过缩进和连接符（如 <code>+--</code> 和 <code>|</code>）清晰地展现树状层次结构。</p>
+<p>为了确保代码质量和功能正确性，我集成了课程提供的 TestKit 测试框架，编写了覆盖所有功能点和边界情况的系统测试用例，包括基本功能、单个选项、选项组合以及错误处理等场景。通过这套完整的测试体系，有效验证了程序在各种使用场景下的稳定性和正确性。</p>
+<p>这个实验不仅加深了我对 Linux 进程管理和 <code>/proc</code> 文件系统的理解，也锻炼了我在系统编程、数据结构设计、命
+令行工具开发和测试驱动开发等方面的实践能力，为后续更复杂的系统级编程奠定了坚实基础。</p>
 
     </div>
 
@@ -681,13 +694,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">10k</span>
+    <span title="站点总字数">11k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">37 分钟</span>
+    <span title="站点阅读时长">38 分钟</span>
   </span>
 </div>
   <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9tdXNlLw==">NexT.Muse</span> 强力驱动
