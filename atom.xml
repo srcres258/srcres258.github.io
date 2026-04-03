@@ -78,11 +78,19 @@ lab 的过程.</p>]]>
     <author>
       <name>吐哺</name>
     </author>
+    <category term="AI" scheme="https://blog.srcres258.top/tags/AI/"/>
+    <category term="OpenClaw" scheme="https://blog.srcres258.top/tags/OpenClaw/"/>
     <id>https://blog.srcres258.top/2026/03/27/openclaw-install/</id>
     <link href="https://blog.srcres258.top/2026/03/27/openclaw-install/"/>
     <published>2026-03-27T01:51:13.000Z</published>
-    <title>openclaw-install</title>
-    <updated>2026-03-27T01:51:13.919Z</updated>
+    <summary>
+      <![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><span class="exturl" data-url="aHR0cHM6Ly9vcGVuY2xhdy5haS8=">OpenClaw<i class="fa fa-external-link-alt"></i></span> (前身<span class="exturl" data-url="aHR0cHM6Ly9jbGF3ZGJvdC55b3Uv">Clawdbot<i class="fa fa-external-link-alt"></i></span>) 是最近非常火爆的一款 personal AI assistant 工具.
+由于OpenClaw的爆火, 网友给了其一个可爱的昵称 “小龙虾🦞”. 它让即使不涉及程序设计的普通人
+也有机会使用 AI 智能体, 并用其辅助自己的日常工作生活, 为自己的 daily routine 增加些许
+计划与建议, 让日程安排更加井然有序, 自己的疑问与需求得到及时的解决.</p>]]>
+    </summary>
+    <title>我的 OpenClaw 安装过程与使用体验</title>
+    <updated>2026-04-03T15:39:07.255Z</updated>
   </entry>
   <entry>
     <author>
