@@ -11,7 +11,22 @@
   <rights>All rights reserved 2026, 吐哺</rights>
   <subtitle>srcres258</subtitle>
   <title>吐哺</title>
-  <updated>2026-04-02T13:23:07.468Z</updated>
+  <updated>2026-04-08T02:30:17.063Z</updated>
+  <entry>
+    <author>
+      <name>吐哺</name>
+    </author>
+    <id>https://blog.srcres258.top/2026/04/08/cve-2026-39860/</id>
+    <link href="https://blog.srcres258.top/2026/04/08/cve-2026-39860/"/>
+    <published>2026-04-07T18:23:21.000Z</published>
+    <summary>
+      <![CDATA[<h1 id="Nix-安全漏洞-CVE-2026-39860"><a href="#Nix-安全漏洞-CVE-2026-39860" class="headerlink" title="Nix 安全漏洞 (CVE-2026-39860)"></a>Nix 安全漏洞 (CVE-2026-39860)</h1><p>今日收到来自 <span class="exturl" data-url="aHR0cHM6Ly90Lm1lL25peG9zX3poY24=">NixOS CN<i class="fa fa-external-link-alt"></i></span> Telegram 群组的重要信息, NixOS 发行版的关键系统组件存在重要安全漏洞
+(<span class="exturl" data-url="aHR0cHM6Ly9udmQubmlzdC5nb3YvdnVsbi9kZXRhaWwvQ1ZFLTIwMjUtMzk4NjA=">CVE-2026-39860<i class="fa fa-external-link-alt"></i></span>), 关乎每一位 NixOS 使用者, 详情见此. 笔者检查了自己的 NixOS 发现中招了:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ nix --version</span><br><span class="line">nix (Nix) 2.31.2</span><br></pre></td></tr></table></figure>]]>
+    </summary>
+    <title>Nix 安全漏洞 (CVE-2026-39860) 与防范措施</title>
+    <updated>2026-04-08T02:30:17.063Z</updated>
+  </entry>
   <entry>
     <author>
       <name>吐哺</name>
