@@ -11,7 +11,7 @@
   <rights>All rights reserved 2026, 吐哺</rights>
   <subtitle>srcres258</subtitle>
   <title>吐哺</title>
-  <updated>2026-04-08T02:30:17.063Z</updated>
+  <updated>2026-04-11T02:20:34.716Z</updated>
   <entry>
     <author>
       <name>吐哺</name>
@@ -25,7 +25,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ nix --version</span><br><span class="line">nix (Nix) 2.31.2</span><br></pre></td></tr></table></figure>]]>
     </summary>
     <title>Nix 安全漏洞 (CVE-2026-39860) 与防范措施</title>
-    <updated>2026-04-08T02:30:17.063Z</updated>
+    <updated>2026-04-11T02:20:34.716Z</updated>
   </entry>
   <entry>
     <author>
@@ -40,7 +40,7 @@
       <![CDATA[<p>本博客记录我完成 <span class="exturl" data-url="aHR0cHM6Ly9qeXl3aWtpLmNuL09TLzIwMjY=">jyy 操作系统课程<i class="fa fa-external-link-alt"></i></span> <span class="exturl" data-url="aHR0cHM6Ly9qeXl3aWtpLmNuL09TLzIwMjYvbGFicy9NMi5tZA==">M2 lab<i class="fa fa-external-link-alt"></i></span> 的过程.</p>]]>
     </summary>
     <title>JYY OS 2026 Lab M2 - 打印进程树 (pstree)</title>
-    <updated>2026-04-02T13:23:07.468Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
   <entry>
     <author>
@@ -56,7 +56,7 @@
 lab 的过程.</p>]]>
     </summary>
     <title>JYY OS 2026 Lab M1 - 迷宫游戏 (labyrinth)</title>
-    <updated>2026-04-02T13:22:46.854Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
   <entry>
     <author>
@@ -71,7 +71,7 @@ lab 的过程.</p>]]>
       <![CDATA[<p>此处收集个人平时可能用到的一些 GDB 常用调试命令, 以备随时查阅.</p>]]>
     </summary>
     <title>GDB 常用命令收集</title>
-    <updated>2026-03-29T04:06:38.660Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
   <entry>
     <author>
@@ -87,7 +87,7 @@ lab 的过程.</p>]]>
       <![CDATA[<p>以下整理部分数学必背公式与知识点, 便于个人日常记忆.</p>]]>
     </summary>
     <title>数学每日背诵内容</title>
-    <updated>2026-03-28T02:17:03.810Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
   <entry>
     <author>
@@ -105,7 +105,7 @@ lab 的过程.</p>]]>
 计划与建议, 让日程安排更加井然有序, 自己的疑问与需求得到及时的解决.</p>]]>
     </summary>
     <title>我的 OpenClaw 安装过程与使用体验</title>
-    <updated>2026-04-03T15:39:07.255Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
   <entry>
     <author>
@@ -120,7 +120,7 @@ lab 的过程.</p>]]>
       <![CDATA[<p>此处收集个人平时可能用到的一些 Vim 常用快捷键以备随时查阅。</p>]]>
     </summary>
     <title>Vim 常见快捷键收集</title>
-    <updated>2026-03-29T04:03:17.883Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
   <entry>
     <author>
@@ -138,7 +138,7 @@ lab 的过程.</p>]]>
 <p>重要等价无穷小已用★标出. ★越多表示越重要.</p>]]>
     </summary>
     <title>常用等价无穷小收集</title>
-    <updated>2026-03-21T03:11:05.748Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
   <entry>
     <author>
@@ -154,6 +154,6 @@ lab 的过程.</p>]]>
 给自己的博客站点一次全面的技术革新, 在新的框架体系下继续撰写自己的博文.</p>]]>
     </summary>
     <title>本博客站点已迁移至新版</title>
-    <updated>2026-03-08T13:02:21.189Z</updated>
+    <updated>2026-04-11T02:20:34.717Z</updated>
   </entry>
 </feed>
