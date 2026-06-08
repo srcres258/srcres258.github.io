@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JYY OS 2026 Lab M1 - 迷宫游戏 (labyrinth)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.8.0/tufte.min.css">
+    <link rel="stylesheet" href="/assets/tufted.css">
+    <link rel="stylesheet" href="/assets/custom.css">
+  </head>
+  <body>
+    <header>
+      <nav><a href="/">Home</a><a href="/docs/">Docs</a><a href="/blog/">Blog</a><a href="/cv/">CV</a></nav>
+    </header>
+    <article>
+      <section>
+        <h2>JYY OS 2026 Lab M1 - 迷宫游戏 (labyrinth)</h2>
+        <p>学习 jyy 老师的 <a href="https://jyywiki.cn/OS/2026/labs/M1.md">2026 年度 OS 课程</a>, 开始完成老师布置的各 lab. 这篇 blog 记录我完成第一个 lab 的过程.</p>
+        <h2>lab 简介与背景</h2>
+        <h3>简介</h3>
+        <blockquote>
+          <p>M1: 迷宫游戏 (labyrinth)</p>
+          <p>计算机世界有趣的地方在于，你可以动手构建任何你认为应该可以实现的东西。我们的热身实验是一个很像 “Online Judge” 中做过的题目，只不过是一个真正有意义的 “实用工具”：一个命令行迷宫游戏，帮助你熟悉基本的命令行参数解析和 UNIX 命令行工具的 “基本约定”。</p>
+        </blockquote>
+        <p>这 lab 一上来就直击灵魂. 不像那些枯燥的 “Hello World”, 老师直接扔了个 “迷宫游戏” 热身赛, 表面看像OJ老题 (走迷宫找出口. jyy 也是 OI 退役选手, 懂), 但升级成命令行实用工具, 专治命令行参数解析恐惧症. 想想看: <code>./labyrinth -m map.txt -s seed -p player_pos</code> 这种 UNIX 范儿的参数轰炸, 解析完还能生成随机迷宫, AI 对手, 瞬间从菜鸟变老司机. 蒋老师这招高明. 借游戏入门底层约定，顺便让你体会 <strong>“计算机世界，你想造啥就造啥”</strong> 的自由感.</p>
+        <h3>背景</h3>
+        <blockquote>
+          <ol start="1">
+            <li>背景</li>
+          </ol>
+          <p>Rogue-like 游戏可以追溯到 1980 年的《Rogue》，这是一款在 UNIX 系统上运行的文字冒险游戏。在那个图形界面还未普及的年代，程序员们用 ASCII 字符创造了一个充满想象力的世界：</p>
+          <p>#image(“https://jyywiki.cn/OS/img/rouge1980.webp”)</p>
+          <p>既然是 “文字冒险”，就少不了最基本的命令行命令。在 UNIX 系统中，命令行终端 (Terminal) 是用户与系统交互的基本界面。当你打开终端时，系统会启动一个 Shell 程序来解析和执行平时我们熟悉的命令，如 ls、cd、pwd 等，例如：</p>
+          <pre><code>cowsay -f dragon "Hello OS!"<br></code></pre>
+          <p>会把</p>
+          <pre><code>argv = {"cowsay", "-f", "dragon", "Hello OS!", NULL}<br></code></pre>
+          <p>传递给 cowsay 程序的 main 函数，程序解析参数并在终端 (模拟器) 上画出下面的 ASCII Art：</p>
+          <p>#image(“https://jyywiki.cn/OS/img/cowsay.webp”)</p>
+          <p>在这个实验里，我们将构建一个命令行版本的 “游戏后端”，用于支持一个多人对战的 Rogue-like 游戏，并且熟悉命令行工具的命令行解析。这是一个程序本身无状态的后端服务，每运行一次程序就对应了一次用户操作，执行完就会退出，而所有的游戏状态都保存在文件中。这种设计让游戏系统非常灵活——通过实现游戏 “前端”，玩家可以在同一台机器上进行多人游戏，甚至扩展成网络对战模式。</p>
+        </blockquote>
+        <p>我直接上 Grok 帮我解读了. lab 文档还是很通俗易懂的, 非常喜欢 jyy 老师布置 lab 的行事风格.</p>
+        <blockquote>
+          <p>背景部分纯干货，带我穿越回80年代《Rogue》时代：没GPU，全靠ASCII艺术硬扛！终端Shell解析cowsay -f dragon “Hello OS!”，argv数组一塞，龙哥就吐字萌翻天（图片太逗了）。这lab的核心是无状态后端神设计：每次跑程序=一次用户操作，状态全存文件，退出就拜拜。为什么牛？本地多人轮流玩（一人一终端），扩展网络战零门槛，简直是“微服务鼻祖”！jyy老师不愧是老江湖，用游戏包装CLI哲学，让我一边敲代码一边想：UNIX哲学原来这么rogue（流氓）有趣，未来我也要这么设计工具，low-key装逼~ 😎</p>
+        </blockquote>
+        <h2>lab 内容与分析</h2>
+        <h3>正文</h3>
+        <p>来到 lab 正文要求部分.</p>
+        <blockquote>
+          <p>🗒️ 实验要求：实现 labyrinth 命令行迷宫游戏</p>
+          <p>你需要实现一个命令行工具 labyrinth，它可以从文件加载迷宫地图，显示玩家位置，并支持玩家在迷宫中移动。除了基本功能外，你还需要实现命令行参数解析、错误处理以及连通性检查等功能。</p>
+        </blockquote>
+        <h3>分析</h3>
+        <p>这个实验要求还是比较简单的. 直接让 MiniMax M2.7 给我列了个 <a href="https://github.com/srcres258/jyy-os-2026-lab/blob/master/M1/PLAN.md">PLAN.md</a> (节选):</p>
+        <pre><code>## 1. 任务理解<br><br>根据 `main.c` 后端代码和 M1 实验描述，前端 `game.py` 需要实现：<br>- 两名玩家（玩家0、玩家1）使用 **WASD**（玩家0）和 **HJKL**（玩家1）在同一终端窗口中控制各自的角色<br>- 通过调用 `labyrinth` 命令行工具更新游戏状态<br>- 每次移动后刷新屏幕显示最新的迷宫状态<br><br>### 后端工具行为分析（来自 main.c）<br><br>| 命令 | 行为 |<br>|------|------|<br>| `labyrinth -m map.txt -p 0` | 打印地图（玩家0视角） |<br>| `labyrinth -m map.txt -p 0 --move up` | 移动玩家0向上，返回0成功，1失败 |<br>| `labyrinth -m map.txt -p 1 --move down` | 移动玩家1向下 |<br><br>- 移动成功后，`labyrinth` 会**原地修改 map.txt**（覆盖写入）<br>- 返回值通过 `subprocess.returncode` 判断成功/失败<br>- 地图文件需要预先包含玩家标记（`0`、`1`），或不包含时自动放置到第一个空地<br><br>...<br></code></pre>
+        <p>然后就开始编写了, 后端用 C 语言 (即提及到的 labyrinth 程序), 前端比较自由, lab 没做要求, 我索性用简单易用的 Python 写了.</p>
+        <h3>框架与流程</h3>
+        <p>程序流程 (main 函数)</p>
+        <p>命令行解析 → 参数校验 → 加载地图 → 连通性检查 → [移动玩家] → [保存地图] / 打印地图</p>
+        <table>
+          <thead>
+            <tr>
+              <th>步骤</th>
+              <th>功能</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>命令行解析</td>
+              <td>getopt_long 处理 -m, -p, –move, –version</td>
+            </tr>
+            <tr>
+              <td>参数校验</td>
+              <td>检查地图文件、玩家ID有效性</td>
+            </tr>
+            <tr>
+              <td>加载地图</td>
+              <td>解析文件，记录玩家位置</td>
+            </tr>
+            <tr>
+              <td>连通性检查</td>
+              <td>DFS/BFS 验证所有非墙格子连通</td>
+            </tr>
+            <tr>
+              <td>移动逻辑</td>
+              <td>边界/障碍/碰撞检测，更新位置</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>核心函数</p>
+        <table>
+          <thead>
+            <tr>
+              <th>函数</th>
+              <th>作用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>load_map()</td>
+              <td>从文件加载地图，检测玩家位置</td>
+            </tr>
+            <tr>
+              <td>check_connectivity()</td>
+              <td>深度优先搜索验证地图连通性</td>
+            </tr>
+            <tr>
+              <td>is_valid_move()</td>
+              <td>验证移动合法性（边界、障碍、碰撞）</td>
+            </tr>
+            <tr>
+              <td>make_move()</td>
+              <td>执行移动，更新网格和玩家坐标</td>
+            </tr>
+            <tr>
+              <td>find_first_empty()</td>
+              <td>查找第一个空格子</td>
+            </tr>
+            <tr>
+              <td>print_map()</td>
+              <td>输出地图</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>实现完成主要代码</h3>
+        <p>后端实现完成的代码已经传到我的 <a href="https://github.com/srcres258/jyy-os-2026-lab/blob/master/M1">GitHub repo</a> 中了. <code>main.c</code> 的关键代码:</p>
+        <h4>数据结构定义</h4>
+        <pre><code data-lang="c"><span style="color: #d73948">typedef</span> <span style="color: #d73948">struct</span> {<br>    <span style="color: #d73948">char</span> grid[MAX_ROWS][MAX_COLS];<br>    <span style="color: #d73948">int</span> rows;<br>    <span style="color: #d73948">int</span> cols;<br>    <span style="color: #d73948">int</span> player_positions[MAX_PLAYERS][<span style="color: #b60157">2</span>]; <span style="color: #74747c">//</span><span style="color: #74747c"> [row, col] for each player ID</span><br>} <span style="color: #4b69c6">Map</span>;<br></code></pre>
+        <ul>
+          <li>grid: 二维字符数组存储地图，#=墙，.=空地，0-9=玩家</li>
+          <li>player_positions: 记录每个玩家（0-9）的坐标，支持多玩家</li>
+        </ul>
+        <h4>命令行解析</h4>
+        <pre><code data-lang="c"><span style="color: #d73948">static</span> <span style="color: #d73948">struct</span> option long_options[] <span style="color: #d73948">=</span> {<br>    {<span style="color: #198810">"</span><span style="color: #198810">map</span><span style="color: #198810">"</span>, required_argument, <span style="color: #b60157">0</span>, <span style="color: #198810">'</span><span style="color: #198810">m</span><span style="color: #198810">'</span>},<br>    {<span style="color: #198810">"</span><span style="color: #198810">player</span><span style="color: #198810">"</span>, required_argument, <span style="color: #b60157">0</span>, <span style="color: #198810">'</span><span style="color: #198810">p</span><span style="color: #198810">'</span>},<br>    {<span style="color: #198810">"</span><span style="color: #198810">move</span><span style="color: #198810">"</span>, required_argument, <span style="color: #b60157">0</span>, <span style="color: #b60157">0</span>},<br>    {<span style="color: #198810">"</span><span style="color: #198810">version</span><span style="color: #198810">"</span>, no_argument, <span style="color: #b60157">0</span>, <span style="color: #198810">'</span><span style="color: #198810">v</span><span style="color: #198810">'</span>},<br>    {<span style="color: #b60157">0</span>, <span style="color: #b60157">0</span>, <span style="color: #b60157">0</span>, <span style="color: #b60157">0</span>}<br>};<br><span style="color: #d73948">while</span> ((opt <span style="color: #d73948">=</span> <span style="color: #4b69c6">getopt_long</span>(argc, argv, <span style="color: #198810">"</span><span style="color: #198810">m:p:v</span><span style="color: #198810">"</span>, long_options, <span style="color: #d73948">&amp;</span>option_index)) <span style="color: #d73948">!=</span> <span style="color: #d73948">-</span><span style="color: #b60157">1</span>) {<br>    <span style="color: #d73948">switch</span> (opt) {<br>        <span style="color: #d73948">case</span> <span style="color: #198810">'</span><span style="color: #198810">m</span><span style="color: #198810">'</span>: map_file <span style="color: #d73948">=</span> optarg; <span style="color: #d73948">break</span>;<br>        <span style="color: #d73948">case</span> <span style="color: #198810">'</span><span style="color: #198810">p</span><span style="color: #198810">'</span>: player_id <span style="color: #d73948">=</span> <span style="color: #4b69c6">atoi</span>(optarg); <span style="color: #d73948">break</span>;<br>        <span style="color: #d73948">case</span> <span style="color: #b60157">0</span>:  <span style="color: #74747c">//</span><span style="color: #74747c"> 长选项处理</span><br>            <span style="color: #d73948">if</span> (<span style="color: #4b69c6">strcmp</span>(long_options[option_index].name, <span style="color: #198810">"</span><span style="color: #198810">move</span><span style="color: #198810">"</span>) <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>)<br>                move_direction <span style="color: #d73948">=</span> optarg;<br>            <span style="color: #d73948">break</span>;<br>    }<br>}<br></code></pre>
+        <p>使用 getopt_long 支持短选项（-m）和长选项（–map）两种形式。</p>
+        <h4>地图加载</h4>
+        <pre><code data-lang="c"><span style="color: #d73948">int</span> <span style="color: #4b69c6">load_map</span>(<span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>filename, Map <span style="color: #d73948">*</span>map) {<br>    FILE <span style="color: #d73948">*</span>f <span style="color: #d73948">=</span> <span style="color: #4b69c6">fopen</span>(filename, <span style="color: #198810">"</span><span style="color: #198810">r</span><span style="color: #198810">"</span>);<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> ...</span><br>    <span style="color: #d73948">while</span> (<span style="color: #4b69c6">fgets</span>(line, <span style="color: #d73948">sizeof</span>(line), f) <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span> <span style="color: #d73948">&amp;&amp;</span> row <span style="color: #d73948">&lt;</span> MAX_ROWS) {<br>        line[<span style="color: #4b69c6">strcspn</span>(line, <span style="color: #198810">"</span><span style="color: #1d6c76">\n</span><span style="color: #198810">"</span>)] <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>;  <span style="color: #74747c">//</span><span style="color: #74747c"> 去除换行符</span><br>        <br>        <span style="color: #74747c">//</span><span style="color: #74747c"> 验证字符合法性</span><br>        <span style="color: #d73948">if</span> (c <span style="color: #d73948">!=</span> <span style="color: #198810">'</span><span style="color: #198810">#</span><span style="color: #198810">'</span> <span style="color: #d73948">&amp;&amp;</span> c <span style="color: #d73948">!=</span> <span style="color: #198810">'</span><span style="color: #198810">.</span><span style="color: #198810">'</span> <span style="color: #d73948">&amp;&amp;</span> (c <span style="color: #d73948">&lt;</span> <span style="color: #198810">'</span><span style="color: #198810">0</span><span style="color: #198810">'</span> <span style="color: #d73948">||</span> c <span style="color: #d73948">></span> <span style="color: #198810">'</span><span style="color: #198810">9</span><span style="color: #198810">'</span>))<br>            <span style="color: #d73948">return</span> <span style="color: #d73948">-</span><span style="color: #b60157">1</span>;<br>        <br>        <span style="color: #74747c">//</span><span style="color: #74747c"> 记录玩家位置</span><br>        <span style="color: #d73948">if</span> (c <span style="color: #d73948">>=</span> <span style="color: #198810">'</span><span style="color: #198810">0</span><span style="color: #198810">'</span> <span style="color: #d73948">&amp;&amp;</span> c <span style="color: #d73948">&lt;=</span> <span style="color: #198810">'</span><span style="color: #198810">9</span><span style="color: #198810">'</span>) {<br>            <span style="color: #d73948">int</span> pid <span style="color: #d73948">=</span> c <span style="color: #d73948">-</span> <span style="color: #198810">'</span><span style="color: #198810">0</span><span style="color: #198810">'</span>;<br>            map->player_positions[pid][<span style="color: #b60157">0</span>] <span style="color: #d73948">=</span> row;<br>            map->player_positions[pid][<span style="color: #b60157">1</span>] <span style="color: #d73948">=</span> i;<br>        }<br>        <span style="color: #4b69c6">strcpy</span>(map->grid[row], line);<br>        row<span style="color: #d73948">++</span>;<br>    }<br>}<br></code></pre>
+        <p>逐行读取文件，验证格式，同时记录所有玩家数字对应的坐标位置。</p>
+        <h4>连通性检查（DFS）</h4>
+        <pre><code data-lang="c"><span style="color: #d73948">bool</span> <span style="color: #4b69c6">check_connectivity</span>(Map <span style="color: #d73948">*</span>map) {<br>    <span style="color: #d73948">bool</span> visited[MAX_ROWS][MAX_COLS] <span style="color: #d73948">=</span> {<span style="color: #d73948">false</span>};<br>    <span style="color: #d73948">int</span> stack[MAX_ROWS <span style="color: #d73948">*</span> MAX_COLS][<span style="color: #b60157">2</span>];<br>    <span style="color: #d73948">int</span> stack_top <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>;<br>    <br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 找起点</span><br>    <span style="color: #d73948">for</span> (<span style="color: #d73948">int</span> i <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>; i <span style="color: #d73948">&lt;</span> map->rows <span style="color: #d73948">&amp;&amp;</span> start_row <span style="color: #d73948">==</span> <span style="color: #d73948">-</span><span style="color: #b60157">1</span>; i<span style="color: #d73948">++</span>)<br>        <span style="color: #d73948">for</span> (<span style="color: #d73948">int</span> j <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>; j <span style="color: #d73948">&lt;</span> map->cols; j<span style="color: #d73948">++</span>)<br>            <span style="color: #d73948">if</span> (map->grid[i][j] <span style="color: #d73948">!=</span> <span style="color: #198810">'</span><span style="color: #198810">#</span><span style="color: #198810">'</span>) { start_row <span style="color: #d73948">=</span> i; start_col <span style="color: #d73948">=</span> j; }<br>    <br>    <span style="color: #74747c">//</span><span style="color: #74747c"> DFS</span><br>    stack[stack_top<span style="color: #d73948">++</span>] <span style="color: #d73948">=</span> {start_row, start_col};<br>    visited[start_row][start_col] <span style="color: #d73948">=</span> <span style="color: #d73948">true</span>;<br>    <br>    <span style="color: #d73948">int</span> directions[<span style="color: #b60157">4</span>][<span style="color: #b60157">2</span>] <span style="color: #d73948">=</span> {{<span style="color: #d73948">-</span><span style="color: #b60157">1</span>, <span style="color: #b60157">0</span>}, {<span style="color: #b60157">1</span>, <span style="color: #b60157">0</span>}, {<span style="color: #b60157">0</span>, <span style="color: #d73948">-</span><span style="color: #b60157">1</span>}, {<span style="color: #b60157">0</span>, <span style="color: #b60157">1</span>}};<br>    <span style="color: #d73948">while</span> (stack_top <span style="color: #d73948">></span> <span style="color: #b60157">0</span>) {<br>        <span style="color: #d73948">int</span> r <span style="color: #d73948">=</span> stack[<span style="color: #d73948">--</span>stack_top][<span style="color: #b60157">0</span>];<br>        <span style="color: #d73948">int</span> c <span style="color: #d73948">=</span> stack[stack_top][<span style="color: #b60157">1</span>];<br>        <span style="color: #d73948">for</span> (<span style="color: #d73948">int</span> d <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>; d <span style="color: #d73948">&lt;</span> <span style="color: #b60157">4</span>; d<span style="color: #d73948">++</span>) {<br>            <span style="color: #d73948">int</span> nr <span style="color: #d73948">=</span> r <span style="color: #d73948">+</span> directions[d][<span style="color: #b60157">0</span>];<br>            <span style="color: #d73948">int</span> nc <span style="color: #d73948">=</span> c <span style="color: #d73948">+</span> directions[d][<span style="color: #b60157">1</span>];<br>            <span style="color: #d73948">if</span> (nr <span style="color: #d73948">>=</span> <span style="color: #b60157">0</span> <span style="color: #d73948">&amp;&amp;</span> nr <span style="color: #d73948">&lt;</span> map->rows <span style="color: #d73948">&amp;&amp;</span> nc <span style="color: #d73948">>=</span> <span style="color: #b60157">0</span> <span style="color: #d73948">&amp;&amp;</span> nc <span style="color: #d73948">&lt;</span> map->cols <span style="color: #d73948">&amp;&amp;</span><br>                <span style="color: #d73948">!</span>visited[nr][nc] <span style="color: #d73948">&amp;&amp;</span> map->grid[nr][nc] <span style="color: #d73948">!=</span> <span style="color: #198810">'</span><span style="color: #198810">#</span><span style="color: #198810">'</span>)<br>                visited[nr][nc] <span style="color: #d73948">=</span> <span style="color: #d73948">true</span>;<br>        }<br>    }<br>    <br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 检查是否所有可达格子都被访问过</span><br>    <span style="color: #d73948">for</span> (<span style="color: #d73948">int</span> i <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>; i <span style="color: #d73948">&lt;</span> map->rows; i<span style="color: #d73948">++</span>)<br>        <span style="color: #d73948">for</span> (<span style="color: #d73948">int</span> j <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>; j <span style="color: #d73948">&lt;</span> map->cols; j<span style="color: #d73948">++</span>)<br>            <span style="color: #d73948">if</span> (map->grid[i][j] <span style="color: #d73948">!=</span> <span style="color: #198810">'</span><span style="color: #198810">#</span><span style="color: #198810">'</span> <span style="color: #d73948">&amp;&amp;</span> <span style="color: #d73948">!</span>visited[i][j])<br>                <span style="color: #d73948">return</span> <span style="color: #d73948">false</span>;<br>    <span style="color: #d73948">return</span> <span style="color: #d73948">true</span>;<br>}<br></code></pre>
+        <p>手动实现 DFS（用数组模拟栈），检查迷宫所有空格是否连通。</p>
+        <h4>移动验证与执行</h4>
+        <pre><code data-lang="c"><span style="color: #74747c">//</span><span style="color: #74747c"> 验证移动合法性</span><br><span style="color: #d73948">bool</span> <span style="color: #4b69c6">is_valid_move</span>(Map <span style="color: #d73948">*</span>map, <span style="color: #d73948">int</span> player_id, <span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>direction) {<br>    <span style="color: #d73948">int</span> dr <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>, dc <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>;<br>    <span style="color: #d73948">if</span> (<span style="color: #4b69c6">strcmp</span>(direction, <span style="color: #198810">"</span><span style="color: #198810">up</span><span style="color: #198810">"</span>) <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>)    dr <span style="color: #d73948">=</span> <span style="color: #d73948">-</span><span style="color: #b60157">1</span>;<br>    <span style="color: #d73948">else</span> <span style="color: #d73948">if</span> (<span style="color: #4b69c6">strcmp</span>(direction, <span style="color: #198810">"</span><span style="color: #198810">down</span><span style="color: #198810">"</span>) <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>)  dr <span style="color: #d73948">=</span> <span style="color: #b60157">1</span>;<br>    <span style="color: #d73948">else</span> <span style="color: #d73948">if</span> (<span style="color: #4b69c6">strcmp</span>(direction, <span style="color: #198810">"</span><span style="color: #198810">left</span><span style="color: #198810">"</span>) <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>)  dc <span style="color: #d73948">=</span> <span style="color: #d73948">-</span><span style="color: #b60157">1</span>;<br>    <span style="color: #d73948">else</span> <span style="color: #d73948">if</span> (<span style="color: #4b69c6">strcmp</span>(direction, <span style="color: #198810">"</span><span style="color: #198810">right</span><span style="color: #198810">"</span>) <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>) dc <span style="color: #d73948">=</span> <span style="color: #b60157">1</span>;<br>    <br>    <span style="color: #d73948">int</span> nr <span style="color: #d73948">=</span> r <span style="color: #d73948">+</span> dr, nc <span style="color: #d73948">=</span> c <span style="color: #d73948">+</span> dc;<br>    <br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 检查边界</span><br>    <span style="color: #d73948">if</span> (nr <span style="color: #d73948">&lt;</span> <span style="color: #b60157">0</span> <span style="color: #d73948">||</span> nr <span style="color: #d73948">>=</span> map->rows <span style="color: #d73948">||</span> nc <span style="color: #d73948">&lt;</span> <span style="color: #b60157">0</span> <span style="color: #d73948">||</span> nc <span style="color: #d73948">>=</span> map->cols) <span style="color: #d73948">return</span> <span style="color: #d73948">false</span>;<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 检查目标是否为墙</span><br>    <span style="color: #d73948">if</span> (map->grid[nr][nc] <span style="color: #d73948">==</span> <span style="color: #198810">'</span><span style="color: #198810">#</span><span style="color: #198810">'</span>) <span style="color: #d73948">return</span> <span style="color: #d73948">false</span>;<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 检查目标是否有其他玩家</span><br>    <span style="color: #d73948">for</span> (<span style="color: #d73948">int</span> i <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>; i <span style="color: #d73948">&lt;</span> MAX_PLAYERS; i<span style="color: #d73948">++</span>)<br>        <span style="color: #d73948">if</span> (i <span style="color: #d73948">!=</span> player_id <span style="color: #d73948">&amp;&amp;</span> map->player_positions[i][<span style="color: #b60157">0</span>] <span style="color: #d73948">==</span> nr <span style="color: #d73948">...</span>)<br>            <span style="color: #d73948">return</span> <span style="color: #d73948">false</span>;<br>    <span style="color: #d73948">return</span> <span style="color: #d73948">true</span>;<br>}<br><span style="color: #74747c">//</span><span style="color: #74747c"> 执行移动</span><br><span style="color: #d73948">bool</span> <span style="color: #4b69c6">make_move</span>(Map <span style="color: #d73948">*</span>map, <span style="color: #d73948">int</span> player_id, <span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>direction) {<br>    map->grid[r][c] <span style="color: #d73948">=</span> <span style="color: #198810">'</span><span style="color: #198810">.</span><span style="color: #198810">'</span>;                    <span style="color: #74747c">//</span><span style="color: #74747c"> 旧位置变空</span><br>    map->grid[nr][nc] <span style="color: #d73948">=</span> <span style="color: #198810">'</span><span style="color: #198810">0</span><span style="color: #198810">'</span> <span style="color: #d73948">+</span> player_id;      <span style="color: #74747c">//</span><span style="color: #74747c"> 新位置放玩家</span><br>    map->player_positions[player_id][<span style="color: #b60157">0</span>] <span style="color: #d73948">=</span> nr;<br>    map->player_positions[player_id][<span style="color: #b60157">1</span>] <span style="color: #d73948">=</span> nc;<br>    <span style="color: #d73948">return</span> <span style="color: #d73948">true</span>;<br>}<br></code></pre>
+        <p>验证和执行分离，验证通过后才修改地图数据。</p>
+        <h4>地图保存</h4>
+        <pre><code data-lang="c"><span style="color: #d73948">if</span> (move_direction <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span>) {<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 移动后写回文件</span><br>    FILE <span style="color: #d73948">*</span>f <span style="color: #d73948">=</span> <span style="color: #4b69c6">fopen</span>(map_file, <span style="color: #198810">"</span><span style="color: #198810">w</span><span style="color: #198810">"</span>);<br>    <span style="color: #d73948">for</span> (<span style="color: #d73948">int</span> i <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>; i <span style="color: #d73948">&lt;</span> map.rows; i<span style="color: #d73948">++</span>)<br>        <span style="color: #4b69c6">fprintf</span>(f, <span style="color: #198810">"</span><span style="color: #b60157">%s</span><span style="color: #1d6c76">\n</span><span style="color: #198810">"</span>, map.grid[i]);<br>    <span style="color: #4b69c6">fclose</span>(f);<br>} <span style="color: #d73948">else</span> {<br>    <span style="color: #4b69c6">print_map</span>(<span style="color: #d73948">&amp;</span>map);  <span style="color: #74747c">//</span><span style="color: #74747c"> 无移动则仅打印</span><br>}<br></code></pre>
+        <p>移动操作完成后直接覆盖原文件保存状态。</p>
+        <h2>前端分析与实现</h2>
+        <h3>实现选择与取舍</h3>
+        <p>lab 讲义中给出了针对前端实现的两条路线:</p>
+        <blockquote>
+          <p>🎮 本地双人对战：两名玩家使用不同的按键 (WASD/HJKL) 在同一个终端窗口中控制各自的角色。前端程序会自动调用 labyrinth 命令行工具来更新游戏状态，并在每次移动后刷新屏幕显示最新的迷宫状态。 🌐 网络多人对战：在这种模式下，服务器会为每个 ssh 连接的玩家自动分配 ID，每个玩家可以看到所有其他玩家在迷宫中的位置。服务器会序列化和处理所有玩家的移动请求，确保游戏状态的一致性。</p>
+        </blockquote>
+        <p>我选择了 “本地双人对战” 这条路线, 主要是网络对战的实现上, 一来可能会很复杂困难, 二来自己缺乏网络编程经验.</p>
+        <h3>整体架构</h3>
+        <pre><code>game.py<br>├── 依赖模块: subprocess, sys, os, termios, tty, select, atexit, signal<br>├── 数据层   → 调用 ./labyrinth 读写地图文件<br>├── 输入层   → termios raw mode + select 非阻塞读取键盘<br>└── 渲染层   → ANSI escape code 彩色输出<br></code></pre>
+        <h3>核心函数</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>函数</th>
+              <th>职责</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>labyrinth_call(args)</td>
+              <td>封装 subprocess 调用，返回 (returncode, stdout, stderr)</td>
+            </tr>
+            <tr>
+              <td>load_map(path)</td>
+              <td>调用 labyrinth -m map.txt -p 0 获取地图文本</td>
+            </tr>
+            <tr>
+              <td>move_player(path, pid, direction)</td>
+              <td>调用 labyrinth –move 执行移动</td>
+            </tr>
+            <tr>
+              <td>colorize(text)</td>
+              <td>逐字符着色：墙壁黄、玩家0绿、玩家1蓝、空地白</td>
+            </tr>
+            <tr>
+              <td>show_map(text, msg)</td>
+              <td>ANSI 清屏 + 渲染地图 + 显示操作提示</td>
+            </tr>
+            <tr>
+              <td>validate_connectivity(text)</td>
+              <td>BFS 验证地图连通性（辅助函数，未在主循环调用）</td>
+            </tr>
+            <tr>
+              <td>game_loop(map_path)</td>
+              <td>主循环：捕获按键 → 移动 → 刷新显示</td>
+            </tr>
+            <tr>
+              <td>main()</td>
+              <td>入口：参数校验、labyrinth 可执行性检查</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>控制方案</h3>
+        <ul>
+          <li>玩家0（绿色）：W/A/S/D 对应 上/左/下/右</li>
+          <li>玩家1（蓝色）：K/H/J/L 对应 上/左/下/右</li>
+          <li>退出：Q</li>
+        </ul>
+        <p>所有按键映射存储在 P0_KEYS、P1_KEYS 字典中，主循环查表驱动。</p>
+        <h3>关键技术细节</h3>
+        <ol start="1">
+          <li>非阻塞输入：使用 termios.tcsetattr + tty.setcbreak 切换终端为 cbreak 模式，select.select() 检测按键，无需 curses 依赖</li>
+          <li>屏幕刷新：ANSI \033[2J 清屏 + \033[H 光标归位，逐帧重绘</li>
+          <li>安全退出：atexit.register + signal.signal(SIGINT/SIGTERM) 双保险恢复终端设置</li>
+          <li>超时保护：subprocess.run(timeout=5) 防止 labyrinth 永久阻塞</li>
+        </ol>
+        <h3>相关代码</h3>
+        <p>见 <a href="https://github.com/srcres258/jyy-os-2026-lab/blob/master/M1/game.py">game.py</a>. 代码逻辑基本清晰明了, 此处不再赘述.</p>
+        <h2>游戏地图的生成</h2>
+        <p>本游戏需要手动提供地图文件. 鉴于地图生成也是电脑随机完成的, 我也基于 Python 做了个地图生成脚本 <a href="https://github.com/srcres258/jyy-os-2026-lab/blob/master/M1/create_map.py">create_map.py</a>, 同时也给出了用这个脚本程序生成的部分 txt 文件, 详见 <a href="https://github.com/srcres258/jyy-os-2026-lab/blob/master/M1">repo</a>.</p>
+        <h2>总结</h2>
+        <p>这个 lab 中 jyy 还提到 testkit 这个测试框架, 可以基于此测试并验证自己的程序是否按照预期方式工作. 但鉴于 OJ 仅面向 NJU 学生开放, 我把蒋老师的 lab framework 也 clone 了下来, 但实在不知如何使用, 故先放下测试部分. (TODO: 抽空向 jyy 请教这个 testkit 该如何使用…)</p>
+      </section>
+    </article>
+  </body>
+</html>

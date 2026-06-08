@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JYY OS 2026 Lab M2 - 打印进程树 (pstree)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.8.0/tufte.min.css">
+    <link rel="stylesheet" href="/assets/tufted.css">
+    <link rel="stylesheet" href="/assets/custom.css">
+  </head>
+  <body>
+    <header>
+      <nav><a href="/">Home</a><a href="/docs/">Docs</a><a href="/blog/">Blog</a><a href="/cv/">CV</a></nav>
+    </header>
+    <article>
+      <section>
+        <h2>JYY OS 2026 Lab M2 - 打印进程树 (pstree)</h2>
+        <p>本博客记录我完成 <a href="https://jyywiki.cn/OS/2026">jyy 操作系统课程</a> <a href="https://jyywiki.cn/OS/2026/labs/M2.md">M2 lab</a> 的过程.</p>
+        <h2>lab 背景信息</h2>
+        <blockquote>
+          <p>操作系统为应用程序提供了 “一组对象” 和访问它们的 API。将各种类型的对象和 API 组合使用，造就了我们丰富多彩的应用程序世界。今天的操作系统都提供<a href="https://www.cyberciti.biz/tips/top-linux-monitoring-tools.html">任务管理器</a>工具监测程序运行状态，例如显示在一段时间内，各个程序 (进程、状态机) 的活跃程度、占用的内存等等。下面的图片展示了 Plasma Desktop 的任务管理器，能够显示系统资源的使用情况和进程的信息。</p>
+        </blockquote>
+        <p>任务管理器是现代操作系统通常都会具有的一个系统组件 (如 Windows 的 <a href="https://en.wikipedia.org/wiki/Task_Manager_(Windows)">taskmgr</a>). 使用 Linux 的极客也会尝试在 Linux 上开发任务管理器程序, 甚至防止 Windows 的 taskmgr, 如我现在常用的 <a href="https://missioncenter.io/">Mission Center</a>.</p>
+        <h2>lab 描述与分析</h2>
+        <blockquote>
+          <p>🗒️ 实验要求：实现 pstree 打印进程之间的树状的父子关系</p>
+          <p>Linux 系统中可以同时运行多个程序。运行的程序称为进程。除了所有进程的根之外，每个进程都有它唯一的父进程，你的任务就是把这棵树在命令行中输出。你可以自由选择展示树的方式 (例如使用缩进表示父子关系)。</p>
+        </blockquote>
+        <p>lab 给出了主要任务. 详细细节还要看后面:</p>
+        <blockquote>
+          <p>总览</p>
+          <p><code>pstree [OPTION]…</code></p>
+          <p>描述</p>
+          <p>把系统中的进程按照父亲-孩子的树状结构打印到终端。</p>
+          <pre><code>   -p 或 --show-pids: 打印每个进程的进程号。<br>   -n 或 --numeric-sort: 按照 pid 的数值从小到大顺序输出一个进程的直接孩子。<br>   -V 或 --version: 打印版本信息。<br></code></pre>
+          <p>你可以在命令行中观察系统的 <code>pstree</code> 的执行行为 (如执行 <code>pstree -V</code>、<code>pstree --show-pids</code> 等)。这些参数可能任意组合，但你不需要处理单字母参数合并的情况，例如 <code>-np</code>。</p>
+        </blockquote>
+        <p>这里要求 pstree 程序实现3种类型的参数. 针对每个参数, 结合 lab 的要求, 大致梳理一下我的相关思路:</p>
+        <ol start="1">
+          <li>
+            <p>-p / –show-pids (打印进程号)</p>
+            <p>实现思路：使用全局标志变量 show_pids 记录状态。</p>
+            <p>在命令行解析时，通过 getopt_long() 检测到 -p 或 –show-pids 时，将 show_pids 置为 1。</p>
+            <p>在打印进程时，根据该标志决定输出格式：</p>
+            <ul>
+              <li>若 show_pids == 0：直接打印进程名，如 systemd</li>
+              <li>若 show_pids == 1：打印进程名+PID，如 systemd(1)</li>
+            </ul>
+          </li>
+          <li>
+            <p>-n / –numeric-sort (按 PID 排序)</p>
+            <p>实现思路：使用全局标志变量 numeric_sort 记录状态。</p>
+            <p>在命令行解析时，检测到 -n 或 –numeric-sort 时，将 numeric_sort 置为 1。</p>
+            <p>在构建进程树后、打印前，遍历每个进程的子进程列表，使用 qsort() 按 PID 数值进行升序排序。排序比较函数为 compare_pid()，返回值为子进程 A 的 PID 减去子进程 B 的 PID。</p>
+          </li>
+          <li>
+            <p>-V / –version (打印版本)</p>
+            <p>实现思路：独立处理，无需全局状态。</p>
+            <p>在 getopt_long() 的 switch 分支中，检测到 -V 或 –version 时：</p>
+            <ul>
+              <li>调用 print_version() 函数直接输出版本信息</li>
+              <li>立即返回 0，终止程序执行</li>
+            </ul>
+            <p>由于版本信息无需访问进程列表，因此放在读取进程之前处理，效率最优。</p>
+          </li>
+        </ol>
+        <h2>实现过程</h2>
+        <h3>主程序</h3>
+        <h4>整体架构</h4>
+        <p>程序主要分为以下几个模块：</p>
+        <ol start="1">
+          <li>数据结构定义 — 定义进程结构体和全局变量</li>
+          <li>进程读取 — 从 /proc 文件系统读取进程信息</li>
+          <li>建树 — 根据父子关系构建进程树</li>
+          <li>打印 — 按树状结构输出进程信息</li>
+          <li>命令行解析 — 处理 -p、-n、-V 等选项</li>
+        </ol>
+        <h4>详细实现过程</h4>
+        <h5>数据结构定义</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">static</span> <span style="color: #d73948">int</span> show_pids <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>;    <span style="color: #74747c">//</span><span style="color: #74747c"> 控制是否显示 PID</span><br><span style="color: #d73948">static</span> <span style="color: #d73948">int</span> numeric_sort <span style="color: #d73948">=</span> <span style="color: #b60157">0</span>;  <span style="color: #74747c">//</span><span style="color: #74747c"> 控制是否按 PID 排序</span><br><span style="color: #d73948">typedef</span> <span style="color: #d73948">struct</span> Process {<br>    <span style="color: #4b69c6">pid_t</span> pid;              <span style="color: #74747c">//</span><span style="color: #74747c"> 进程号</span><br>    <span style="color: #4b69c6">pid_t</span> ppid;             <span style="color: #74747c">//</span><span style="color: #74747c"> 父进程号</span><br>    <span style="color: #d73948">char</span> comm[MAX_NAME_LEN]; <span style="color: #74747c">//</span><span style="color: #74747c"> 进程名</span><br>    <span style="color: #d73948">int</span> nchildren;          <span style="color: #74747c">//</span><span style="color: #74747c"> 子进程数量</span><br>    <span style="color: #d73948">struct</span> Process <span style="color: #d73948">*</span><span style="color: #d73948">*</span>children; <span style="color: #74747c">//</span><span style="color: #74747c"> 子进程指针数组</span><br>} <span style="color: #4b69c6">Process</span>;<br></code></pre>
+        <ul>
+          <li>使用 <code>show_pids</code> 和 <code>numeric_sort</code> 两个全局标志变量记录选项状态</li>
+          <li><code>Process</code> 结构体包含进程的基本信息和子进程指针数组</li>
+        </ul>
+        <h5>命令行参数解析</h5>
+        <p>使用 <code>getopt_long()</code> 函数解析命令行参数：</p>
+        <pre><code data-lang="c"><span style="color: #d73948">static</span> <span style="color: #d73948">struct</span> option long_options[] <span style="color: #d73948">=</span> {<br>    {<span style="color: #198810">"</span><span style="color: #198810">show-pids</span><span style="color: #198810">"</span>, no_argument, <span style="color: #b60157">0</span>, <span style="color: #198810">'</span><span style="color: #198810">p</span><span style="color: #198810">'</span>},<br>    {<span style="color: #198810">"</span><span style="color: #198810">numeric-sort</span><span style="color: #198810">"</span>, no_argument, <span style="color: #b60157">0</span>, <span style="color: #198810">'</span><span style="color: #198810">n</span><span style="color: #198810">'</span>},<br>    {<span style="color: #198810">"</span><span style="color: #198810">version</span><span style="color: #198810">"</span>, no_argument, <span style="color: #b60157">0</span>, <span style="color: #198810">'</span><span style="color: #198810">V</span><span style="color: #198810">'</span>},<br>    {<span style="color: #198810">"</span><span style="color: #198810">help</span><span style="color: #198810">"</span>, no_argument, <span style="color: #b60157">0</span>, <span style="color: #198810">'</span><span style="color: #198810">h</span><span style="color: #198810">'</span>},<br>    {<span style="color: #b60157">0</span>, <span style="color: #b60157">0</span>, <span style="color: #b60157">0</span>, <span style="color: #b60157">0</span>}<br>};<br></code></pre>
+        <p>解析过程：</p>
+        <ul>
+          <li><code>-p</code> / <code>--show-pids</code>：将 show_pids 置为 1</li>
+          <li><code>-n</code> / <code>--numeric-sort</code>：将 numeric_sort 置为 1</li>
+          <li><code>-V</code> / <code>--version</code>：调用 print_version() 打印版本后直接退出</li>
+          <li>无效选项：打印 usage 信息并返回错误码</li>
+        </ul>
+        <h5>读取进程信息</h5>
+        <p><code>read_process_info()</code> 函数读取单个进程的信息：</p>
+        <ul>
+          <li>读取 <code>/proc/&lt;pid>/comm</code> 文件获取进程名</li>
+          <li>
+            <p>解析 <code>/proc/&lt;pid>/stat</code> 文件获取 PID 和 PPID</p>
+            <ul>
+              <li>使用 <code>sscanf()</code> 解析格式：<code>pid (comm) state ppid</code></li>
+            </ul>
+          </li>
+        </ul>
+        <p><code>read_all_processes()</code> 函数遍历 <code>/proc</code> 目录：</p>
+        <ul>
+          <li>使用 <code>opendir()</code> / <code>readdir()</code> 遍历 <code>/proc</code></li>
+          <li>过滤出以数字命名的目录（进程 PID）</li>
+          <li>调用 <code>read_process_info()</code> 读取每个进程的信息</li>
+        </ul>
+        <h5>构建进程树</h5>
+        <p><code>build_process_tree()</code> 函数完成树的构建：</p>
+        <ol start="1">
+          <li>初始化子进程数组：为每个进程分配子进程指针数组</li>
+          <li>建立父子关系：遍历所有进程，根据 <code>ppid</code> 找到父进程，将子进程加入父进程的 <code>children</code> 数组</li>
+          <li>排序子进程（若启用）：调用 sort_children() 对每个父进程的子进程按 PID 排序</li>
+        </ol>
+        <p><code>sort_children()</code> 函数：</p>
+        <pre><code data-lang="c"><span style="color: #d73948">if</span> (parent->nchildren <span style="color: #d73948">></span> <span style="color: #b60157">1</span> <span style="color: #d73948">&amp;&amp;</span> numeric_sort) {<br>    <span style="color: #4b69c6">qsort</span>(parent->children, parent->nchildren, <span style="color: #d73948">sizeof</span>(Process <span style="color: #d73948">*</span>), compare_pid);<br>}<br></code></pre>
+        <ul>
+          <li>使用标准库 qsort() 函数排序</li>
+          <li>compare_pid() 比较函数返回两进程 PID 的差值，实现升序排列</li>
+        </ul>
+        <h5>查找根进程</h5>
+        <p><code>find_root()</code> 函数查找进程树的根节点：</p>
+        <ol start="1">
+          <li>优先查找 PID 为 1 的进程（通常是 systemd）</li>
+          <li>若未找到，查找 PPID 为 0 的进程</li>
+          <li>若仍未找到，返回第一个进程作为兜底</li>
+        </ol>
+        <h5>打印进程树</h5>
+        <p><code>print_tree_recursive()</code> 函数递归打印树状结构：</p>
+        <p>根节点打印：</p>
+        <ul>
+          <li>根据 <code>show_pids</code> 决定格式</li>
+          <li><code>show_pids</code> == 0：输出 systemd</li>
+          <li><code>show_pids</code> == 1：输出 systemd(1)</li>
+        </ul>
+        <p>子节点打印：</p>
+        <ul>
+          <li>根据深度打印垂直线 <code>|</code> 作为前缀</li>
+          <li>打印连接符 <code>+--</code></li>
+          <li>根据 <code>show_pids</code> 决定是否显示 PID</li>
+        </ul>
+        <p>递归打印子节点：</p>
+        <ul>
+          <li>对每个子进程，打印垂直连接线后递归调用</li>
+        </ul>
+        <p>输出格式示例：</p>
+        <pre><code>systemd<br> +--systemd-journal-<br> | +--greetd-<br> | | +--fish-<br></code></pre>
+        <h5>主函数流程</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">int</span> <span style="color: #4b69c6">main</span>(<span style="color: #d73948">int</span> argc, <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>argv[]) {<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 1. 解析命令行参数，设置 show_pids / numeric_sort</span><br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 2. 读取所有进程信息</span><br>    <span style="color: #4b69c6">read_all_processes</span>();<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 3. 构建进程树（若 numeric_sort 启用则排序）</span><br>    <span style="color: #4b69c6">build_process_tree</span>();<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 4. 查找根进程</span><br>    Process <span style="color: #d73948">*</span>root <span style="color: #d73948">=</span> <span style="color: #4b69c6">find_root</span>();<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 5. 打印进程树</span><br>    <span style="color: #4b69c6">print_tree</span>(root);<br>    <span style="color: #74747c">//</span><span style="color: #74747c"> 6. 释放内存</span><br>    <span style="color: #4b69c6">free_processes</span>();<br>    <span style="color: #d73948">return</span> <span style="color: #b60157">0</span>;<br>}<br></code></pre>
+        <h4>命令行参数与功能的对应关系</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>标志变量</th>
+              <th>作用位置</th>
+              <th>实现方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>-p</code> / <code>--show-pids</code></td>
+              <td><code>show_pids</code> = 1</td>
+              <td><code>print_tree_recursive()</code></td>
+              <td>修改打印格式： <code>%s</code> → <code>%s(%d)</code></td>
+            </tr>
+            <tr>
+              <td><code>-n</code> / <code>--numeric-sort</code></td>
+              <td><code>numeric_sort</code> = 1</td>
+              <td><code>sort_children()</code></td>
+              <td>调用 <code>qsort()</code> 按 PID 排序</td>
+            </tr>
+            <tr>
+              <td><code>-V</code> / <code>--version</code></td>
+              <td>无需标志</td>
+              <td><code>main()</code> switch</td>
+              <td>直接打印版本并退出</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>测试框架</h3>
+        <h4>TestKit 框架概述</h4>
+        <p>TestKit 是本 lab 提供的轻量级测试框架，核心功能包括：</p>
+        <ul>
+          <li><strong>自动注册测试用例</strong>：通过宏和构造函数机制，无需手动管理</li>
+          <li><strong>系统测试</strong>：模拟命令行调用 <code>main()</code> 函数</li>
+          <li><strong>输出捕获</strong>：捕获程序的 stdout/stderr 输出</li>
+          <li><strong>超时保护</strong>：每个测试有 5 秒超时限制</li>
+          <li><strong>环境变量控制</strong>：<code>TK_RUN</code> 或 <code>TK_VERBOSE</code> 启用测试</li>
+        </ul>
+        <h4>文件结构与接入方式</h4>
+        <p>根据我自己对于完成 lab 的规划，项目结构如下：</p>
+        <pre><code>os2026/<br>├── testkit/              # 测试框架（上游提供）<br>│   ├── testkit.h         # 头文件：宏定义、数据结构<br>│   └── testkit.c         # 实现：测试运行器<br>├── pstree/<br>│   ├── pstree.c          # 主程序源码<br>│   ├── tests.c           # 测试用例代码（自己编写）<br>│   └── Makefile          # 构建配置（修改）<br></code></pre>
+        <h4>Makefile 配置</h4>
+        <h5>原始 Makefile</h5>
+        <pre><code data-lang="makefile">NAME <span style="color: #d73948">:=</span> <span style="color: #198810">pstree</span><br><span style="color: #d73948">export</span> MODULE <span style="color: #d73948">:=</span> <span style="color: #198810">M2</span><br><br>CC <span style="color: #d73948">:=</span> <span style="color: #198810">gcc</span><br>CFLAGS <span style="color: #d73948">:=</span> <span style="color: #198810">-Wall -Wextra -D_DEFAULT_SOURCE -I../testkit</span><br></code></pre>
+        <p>关键配置：</p>
+        <ul>
+          <li><strong><code>-I../testkit</code></strong>：添加 testkit 头文件搜索路径，使 <code>#include &lt;testkit.h></code> 能找到文件</li>
+        </ul>
+        <h5>构建目标配置</h5>
+        <pre><code data-lang="makefile"><span style="color: #74747c">#</span><span style="color: #74747c"> 主程序</span><br><span style="color: #d73948">$(</span><span style="color: #4b69c6">NAME</span><span style="color: #d73948">)</span><span style="color: #d73948">:</span> <span style="color: #198810">pstree.c</span><br>  <span style="color: #d73948">$(</span>CC<span style="color: #d73948">)</span> <span style="color: #d73948">$(</span>CFLAGS<span style="color: #d73948">)</span> <span style="color: #4b69c6">-o</span> <span style="color: #d73948">$@</span> <span style="color: #d73948">$&lt;</span><br><br><span style="color: #74747c">#</span><span style="color: #74747c"> 测试程序：链接 testkit.c 和 pstree.c</span><br><span style="color: #d73948">$(</span><span style="color: #4b69c6">NAME</span><span style="color: #d73948">)</span><span style="color: #4b69c6">-test</span><span style="color: #d73948">:</span> <span style="color: #198810">tests.c ../testkit/testkit.c pstree.c</span><br>  <span style="color: #d73948">$(</span>CC<span style="color: #d73948">)</span> <span style="color: #d73948">$(</span>CFLAGS<span style="color: #d73948">)</span> <span style="color: #4b69c6">-o</span> <span style="color: #d73948">$@</span> tests.c ../testkit/testkit.c pstree.c<br></code></pre>
+        <p>测试程序的编译方式：</p>
+        <ul>
+          <li><strong>包含 <code>pstree.c</code></strong>：将主程序代码直接编译进测试程序</li>
+          <li><strong>链接 <code>../testkit/testkit.c</code></strong>：提供测试运行器实现</li>
+          <li><strong>包含 <code>tests.c</code></strong>：提供测试用例定义</li>
+        </ul>
+        <h5>测试目标配置</h5>
+        <pre><code data-lang="makefile"><span style="color: #4b69c6">test</span><span style="color: #d73948">:</span> <span style="color: #d73948">$(</span><span style="color: #198810">NAME</span><span style="color: #d73948">)</span><span style="color: #198810">-test</span><br>  TK_VERBOSE<span style="color: #d73948">=</span><span style="color: #198810">1</span> <span style="color: #4b69c6">./</span><span style="color: #d73948">$(</span><span style="color: #4b69c6">NAME</span><span style="color: #d73948">)</span><span style="color: #4b69c6">-test</span><br></code></pre>
+        <p>运行测试时设置环境变量<code>TK_VERBOSE=1</code>，TestKit 会输出详细结果。</p>
+        <h4>测试用例编写（tests.c）</h4>
+        <h5>头文件包含</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">#include</span> <span style="color: #198810">&lt;</span><span style="color: #198810">testkit.h</span><span style="color: #198810">></span><br><span style="color: #d73948">#include</span> <span style="color: #198810">&lt;</span><span style="color: #198810">string.h</span><span style="color: #198810">></span><br><span style="color: #d73948">#include</span> <span style="color: #198810">&lt;</span><span style="color: #198810">stdlib.h</span><span style="color: #198810">></span><br><span style="color: #d73948">#include</span> <span style="color: #198810">&lt;</span><span style="color: #198810">unistd.h</span><span style="color: #198810">></span><br><span style="color: #d73948">#include</span> <span style="color: #198810">&lt;</span><span style="color: #198810">stdio.h</span><span style="color: #198810">></span><br></code></pre>
+        <p><code>testkit.h</code> 提供了测试框架的核心宏和数据结构。</p>
+        <h5>SystemTest 宏的使用</h5>
+        <p>TestKit 提供两种测试宏：</p>
+        <ul>
+          <li><strong><code>UnitTest</code></strong>：单元测试，直接执行测试函数</li>
+          <li><strong><code>SystemTest</code></strong>：系统测试，通过 <code>fork()</code> 调用 <code>main()</code> 函数</li>
+        </ul>
+        <p>对于命令行程序，使用 <code>SystemTest</code> 更合适。</p>
+        <h5>测试用例示例</h5>
+        <p><strong>基本功能测试</strong>：</p>
+        <pre><code data-lang="c"><span style="color: #4b69c6">SystemTest</span>(basic_no_args,<br>           ((<span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>[]){<span style="color: #198810">"</span><span style="color: #198810">./pstree</span><span style="color: #198810">"</span>})) {<br>    <span style="color: #4b69c6">tk_assert</span>(result->exit_status <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>,<br>              <span style="color: #198810">"</span><span style="color: #198810">Basic pstree command should exit with status 0, got </span><span style="color: #b60157">%d</span><span style="color: #198810">"</span>,<br>              result->exit_status);<br>    <span style="color: #4b69c6">tk_assert</span>(<span style="color: #4b69c6">strlen</span>(result->output) <span style="color: #d73948">></span> <span style="color: #b60157">0</span>,<br>              <span style="color: #198810">"</span><span style="color: #198810">Output should not be empty</span><span style="color: #198810">"</span>);<br>}<br></code></pre>
+        <p>宏展开后的含义：</p>
+        <ul>
+          <li><strong>测试名称</strong>：<code>basic_no_args</code></li>
+          <li><strong>执行命令</strong>：<code>./pstree</code>（无参数）</li>
+          <li>
+            <p><strong>断言检查</strong>：</p>
+            <ul>
+              <li>退出码为 0</li>
+              <li>输出不为空</li>
+            </ul>
+          </li>
+        </ul>
+        <p><strong>带参数的测试</strong>：</p>
+        <pre><code data-lang="c"><span style="color: #4b69c6">SystemTest</span>(show_pids_short,<br>           ((<span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>[]){<span style="color: #198810">"</span><span style="color: #198810">./pstree</span><span style="color: #198810">"</span>, <span style="color: #198810">"</span><span style="color: #198810">-p</span><span style="color: #198810">"</span>})) {<br>    <span style="color: #4b69c6">tk_assert</span>(result->exit_status <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>,<br>              <span style="color: #198810">"</span><span style="color: #198810">pstree -p should exit with status 0, got </span><span style="color: #b60157">%d</span><span style="color: #198810">"</span>,<br>              result->exit_status);<br>    <span style="color: #4b69c6">tk_assert</span>(<span style="color: #4b69c6">strlen</span>(result->output) <span style="color: #d73948">></span> <span style="color: #b60157">0</span>,<br>              <span style="color: #198810">"</span><span style="color: #198810">Output should not be empty</span><span style="color: #198810">"</span>);<br>    <span style="color: #4b69c6">tk_assert</span>(<span style="color: #4b69c6">strstr</span>(result->output, <span style="color: #198810">"</span><span style="color: #198810">(</span><span style="color: #198810">"</span>) <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span>,<br>              <span style="color: #198810">"</span><span style="color: #198810">Output should contain PIDs in parentheses</span><span style="color: #198810">"</span>);<br>}<br></code></pre>
+        <p><strong>组合选项测试</strong>：</p>
+        <pre><code data-lang="c"><span style="color: #4b69c6">SystemTest</span>(show_pids_and_numeric_sort,<br>           ((<span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>[]){<span style="color: #198810">"</span><span style="color: #198810">./pstree</span><span style="color: #198810">"</span>, <span style="color: #198810">"</span><span style="color: #198810">-p</span><span style="color: #198810">"</span>, <span style="color: #198810">"</span><span style="color: #198810">-n</span><span style="color: #198810">"</span>})) {<br>    <span style="color: #4b69c6">tk_assert</span>(result->exit_status <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>, <span style="color: #d73948">...</span>);<br>    <span style="color: #4b69c6">tk_assert</span>(<span style="color: #4b69c6">strlen</span>(result->output) <span style="color: #d73948">></span> <span style="color: #b60157">0</span>, <span style="color: #d73948">...</span>);<br>    <span style="color: #4b69c6">tk_assert</span>(<span style="color: #4b69c6">strstr</span>(result->output, <span style="color: #198810">"</span><span style="color: #198810">(</span><span style="color: #198810">"</span>) <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span>, <span style="color: #d73948">...</span>);<br>}<br></code></pre>
+        <p><strong>错误处理测试</strong>：</p>
+        <pre><code data-lang="c"><span style="color: #4b69c6">SystemTest</span>(invalid_option,<br>           ((<span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>[]){<span style="color: #198810">"</span><span style="color: #198810">./pstree</span><span style="color: #198810">"</span>, <span style="color: #198810">"</span><span style="color: #198810">--invalid-option</span><span style="color: #198810">"</span>})) {<br>    <span style="color: #4b69c6">tk_assert</span>(result->exit_status <span style="color: #d73948">!=</span> <span style="color: #b60157">0</span>,<br>              <span style="color: #198810">"</span><span style="color: #198810">pstree with invalid option should exit with non-zero status</span><span style="color: #198810">"</span>);<br>    <span style="color: #4b69c6">tk_assert</span>(<span style="color: #4b69c6">strstr</span>(result->output, <span style="color: #198810">"</span><span style="color: #198810">usage</span><span style="color: #198810">"</span>) <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span> <span style="color: #d73948">||</span><br>   <span style="color: #4b69c6">strstr</span>(result->output, <span style="color: #198810">"</span><span style="color: #198810">Usage</span><span style="color: #198810">"</span>) <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span> <span style="color: #d73948">||</span><br>              <span style="color: #4b69c6">strstr</span>(result->output, <span style="color: #198810">"</span><span style="color: #198810">invalid</span><span style="color: #198810">"</span>) <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span> <span style="color: #d73948">||</span><br>              <span style="color: #4b69c6">strstr</span>(result->output, <span style="color: #198810">"</span><span style="color: #198810">Invalid</span><span style="color: #198810">"</span>) <span style="color: #d73948">!=</span> <span style="color: #d73948">NULL</span>,<br>              <span style="color: #198810">"</span><span style="color: #198810">Output should mention invalid option or show usage</span><span style="color: #198810">"</span>);<br>}<br></code></pre>
+        <h5>tk_assert 断言宏</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">#define</span> <span style="color: #4b69c6">tk_assert</span>(cond, fmt, <span style="color: #d73948">...</span>) \<br>    <span style="color: #d73948">do</span> { \<br>        <span style="color: #d73948">if</span> (<span style="color: #d73948">!</span>(cond)) { \<br>            <span style="color: #4b69c6">fprintf</span>(stderr, <span style="color: #198810">"</span><span style="color: #198810">Assertion failed: (</span><span style="color: #b60157">%s</span><span style="color: #198810">)</span><span style="color: #1d6c76">\n</span><span style="color: #198810">"</span> \<br>                            <span style="color: #198810">"</span><span style="color: #198810">    In </span><span style="color: #b60157">%s</span><span style="color: #198810"> of </span><span style="color: #b60157">%s</span><span style="color: #198810">:</span><span style="color: #b60157">%d</span><span style="color: #1d6c76">\n</span><span style="color: #198810">"</span>, \<br>                    #cond, <span style="color: #d73948">__func__</span>, <span style="color: #4b69c6">__FILE__</span>, <span style="color: #4b69c6">__LINE__</span>); \<br>            <span style="color: #4b69c6">fprintf</span>(stderr, <span style="color: #198810">"</span><span style="color: #198810">    </span><span style="color: #198810">"</span> fmt, ##__VA_ARGS__); \<br><span style="color: #4b69c6">fprintf</span>(stderr, <span style="color: #198810">"</span><span style="color: #1d6c76">\n</span><span style="color: #198810">"</span>); \<br>            <span style="color: #4b69c6">abort</span>(); \<br>        } \<br>    } <span style="color: #d73948">while</span> (<span style="color: #b60157">0</span>)<br></code></pre>
+        <p>当条件为假时：</p>
+        <ul>
+          <li>打印断言失败的表达式</li>
+          <li>打印所在函数、文件名、行号</li>
+          <li>打印自定义错误信息</li>
+          <li>调用 <code>abort()</code> 终止测试</li>
+        </ul>
+        <h4>SystemTest 宏的工作原理</h4>
+        <h5>宏展开机制</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">#define</span> <span style="color: #4b69c6">SystemTest</span>(name, argv_, <span style="color: #d73948">...</span>) \<br>    <span style="color: #4b69c6">__tk_testcase</span>(name, \<br>        <span style="color: #d73948">struct</span> tk_result <span style="color: #d73948">*</span>result, stest, \<br>        .argc <span style="color: #d73948">=</span> <span style="color: #d73948">sizeof</span>(argv_) <span style="color: #d73948">/</span> <span style="color: #d73948">sizeof</span>(<span style="color: #d73948">void</span> <span style="color: #d73948">*</span>), \<br>        .argv <span style="color: #d73948">=</span> (<span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span><span style="color: #d73948">*</span>)argv_, \<br>        __VA_ARGS__)<br></code></pre>
+        <p><code>SystemTest(basic_no_args, ((const char *[]){"./pstree"}))</code> 展开后：</p>
+        <pre><code data-lang="c"><span style="color: #4b69c6">__tk_testcase</span>(basic_no_args,<br>    <span style="color: #d73948">struct</span> tk_result <span style="color: #d73948">*</span>result, stest,<br>    .argc <span style="color: #d73948">=</span> <span style="color: #b60157">1</span>,<br>    .argv <span style="color: #d73948">=</span> (<span style="color: #d73948">const</span> <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>[]){<span style="color: #198810">"</span><span style="color: #198810"> ./pstree</span><span style="color: #198810">"</span>})<br></code></pre>
+        <h5><code>__tk_testcase</code> 内部宏</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">#define</span> <span style="color: #4b69c6">__tk_testcase</span>(name_, body_arg, test, <span style="color: #d73948">...</span>) \<br>    <span style="color: #d73948">static</span> <span style="color: #d73948">void</span> <span style="color: #4b69c6">TK_UNIQUE_NAME</span>(name_)(body_arg); \<br>    \<br>    <span style="color: #d73948">__attribute__</span>((constructor)) \<br>    <span style="color: #d73948">void</span> <span style="color: #4b69c6">TK_UNIQUE_NAME</span>(reg##name_)() { \<br>        <span style="color: #d73948">void</span> <span style="color: #4b69c6">tk_add_test</span>(<span style="color: #d73948">struct</span> tk_testcase t); \<br>        <span style="color: #4b69c6">tk_add_test</span>( (<span style="color: #d73948">struct</span> tk_testcase) { \<br>            .enabled <span style="color: #d73948">=</span> <span style="color: #b60157">1</span>, \<br>            .name <span style="color: #d73948">=</span> #name_, \<br>            .loc <span style="color: #d73948">=</span> <span style="color: #4b69c6">__FILE__</span> <span style="color: #198810">"</span><span style="color: #198810">:</span><span style="color: #198810">"</span> <span style="color: #4b69c6">TK_TOSTRING</span>(<span style="color: #4b69c6">__LINE__</span>),\<br>            .test <span style="color: #d73948">=</span> <span style="color: #4b69c6">TK_UNIQUE_NAME</span>(name_), \<br>  __VA_ARGS__ \<br>        } ); \<br>    } \<br>    \<br>    <span style="color: #d73948">static</span> <span style="color: #d73948">void</span> <span style="color: #4b69c6">TK_UNIQUE_NAME</span>(name_)(body_arg)<br></code></pre>
+        <p>关键点：</p>
+        <ol start="1">
+          <li><strong><code>__attribute__((constructor))</code></strong>：构造函数，在 <code>main()</code> 之前自动执行</li>
+          <li><strong><code>tk_add_test()</code></strong>：注册测试用例到全局测试数组</li>
+          <li><strong>自动计算 argc</strong>：根据 argv 数组长度确定参数个数</li>
+        </ol>
+        <h4>TestKit 运行机制（testkit.c）</h4>
+        <h5>测试注册</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">void</span> <span style="color: #4b69c6">tk_add_test</span>(<span style="color: #d73948">struct</span> tk_testcase t) {<br>    <span style="color: #d73948">if</span> (<span style="color: #d73948">!</span><span style="color: #4b69c6">getenv</span>(TK_RUN) <span style="color: #d73948">&amp;&amp;</span> <span style="color: #d73948">!</span><span style="color: #4b69c6">getenv</span>(TK_VERBOSE)) {<br>        <span style="color: #d73948">return</span>;  <span style="color: #74747c">//</span><span style="color: #74747c"> 未启用测试时不注册</span><br>    }<br>tests[ntests<span style="color: #d73948">++</span>] <span style="color: #d73948">=</span> t;  <span style="color: #74747c">//</span><span style="color: #74747c"> 添加到测试数组</span><br>}<br></code></pre>
+        <p>只有设置环境变量时，测试才会被注册。</p>
+        <h5>测试执行</h5>
+        <pre><code data-lang="c"><span style="color: #d73948">static</span> <span style="color: #d73948">int</span> <span style="color: #4b69c6">run_testcase</span>(<span style="color: #d73948">struct</span> tk_testcase <span style="color: #d73948">*</span>t, <span style="color: #d73948">char</span> <span style="color: #d73948">*</span>buf) {<br>    <span style="color: #4b69c6">pid_t</span> child_pid <span style="color: #d73948">=</span> <span style="color: #4b69c6">fork</span>();<br>    <span style="color: #d73948">if</span> (child_pid <span style="color: #d73948">==</span> <span style="color: #b60157">0</span>) {<br>        <span style="color: #4b69c6">exit</span>(<span style="color: #4b69c6">main</span>(t->argc, t->argv, environ));  <span style="color: #74747c">//</span><span style="color: #74747c"> fork 后执行 main()</span><br>} <span style="color: #d73948">else</span> {<br>        <span style="color: #4b69c6">waitpid</span>(child_pid, <span style="color: #d73948">&amp;</span>status, <span style="color: #b60157">0</span>);<br>        t-><span style="color: #4b69c6">stest</span>(<span style="color: #d73948">&amp;</span>(<span style="color: #d73948">struct</span> tk_result) {<br>            .exit_status <span style="color: #d73948">=</span> r,<br>            .output <span style="color: #d73948">=</span> buf,<br>        });  <span style="color: #74747c">//</span><span style="color: #74747c"> 调用测试断言</span><br>    }<br>}<br></code></pre>
+        <p>关键流程：</p>
+        <ol start="1">
+          <li><strong><code>fork()</code> 创建子进程</strong></li>
+          <li><strong>子进程调用 <code>main(argc, argv)</code> 执行程序</strong></li>
+          <li><strong>父进程等待子进程结束</strong></li>
+          <li><strong>调用测试断言函数 <code>t->stest()</code> 验证结果</strong></li>
+        </ol>
+        <h5>输出捕获</h5>
+        <pre><code data-lang="c">FILE <span style="color: #d73948">*</span>fp <span style="color: #d73948">=</span> <span style="color: #4b69c6">fmemopen</span>(buf, TK_OUTPUT_LIMIT <span style="color: #d73948">-</span> <span style="color: #b60157">1</span>, <span style="color: #198810">"</span><span style="color: #198810">w+</span><span style="color: #198810">"</span>);<br><span style="color: #4b69c6">setbuf</span>(fp, <span style="color: #d73948">NULL</span>);<br>stdout <span style="color: #d73948">=</span> stderr <span style="color: #d73948">=</span> fp;  <span style="color: #74747c">//</span><span style="color: #74747c"> 重定向 stdout/stderr 到内存缓冲区</span><br></code></pre>
+        <p>将程序的 <code>printf()</code> 输出重定向到内存缓冲区，供后续断言检查。</p>
+        <h4>测试运行流程</h4>
+        <pre><code>$ make test<br>    ↓<br>make pstree-test  # 编译测试程序<br>    ↓<br>执行 ./pstree-test<br>    ↓<br>main() 函数执行<br>    ↓<br>构造函数自动注册测试用例<br>    ↓<br>TestKit 检测到 TK_VERBOSE 环境变量<br>    ↓<br>fork() 创建子进程运行每个测试<br>    ↓<br>子进程调用 main() 并传入参数<br>    ↓<br>父进程捕获输出和退出码<br>    ↓<br>运行 tk_assert 断言<br>    ↓<br>输出测试结果<br></code></pre>
+        <h4>测试覆盖情况</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>测试名称</th>
+              <th>测试目标</th>
+              <th>断言内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>basic_no_args</code></td>
+              <td>无参数运行</td>
+              <td>退出码=0，输出非空</td>
+            </tr>
+            <tr>
+              <td><code>show_pids_short</code></td>
+              <td><code>-p</code> 选项</td>
+              <td>退出码=0，输出含 <code>(</code></td>
+            </tr>
+            <tr>
+              <td><code>show_pids_long</code></td>
+              <td><code>--show-pids</code></td>
+              <td>退出码=0，输出含 <code>(</code></td>
+            </tr>
+            <tr>
+              <td><code>numeric_sort_short</code></td>
+              <td><code>-n</code> 选项</td>
+              <td>退出码=0，输出非空</td>
+            </tr>
+            <tr>
+              <td><code>numeric_sort_long</code></td>
+              <td><code>--numeric-sort</code></td>
+              <td>退出码=0，输出非空</td>
+            </tr>
+            <tr>
+              <td><code>version_short</code></td>
+              <td><code>-V</code> 选项</td>
+              <td>退出码=0，输出含 <code>pstree</code></td>
+            </tr>
+            <tr>
+              <td><code>version_long</code></td>
+              <td><code>--version</code></td>
+              <td>退出码=0，输出含 <code>pstree</code></td>
+            </tr>
+            <tr>
+              <td><code>show_pids_and_numeric_sort</code></td>
+              <td><code>-p -n</code> 组合</td>
+              <td>退出码=0，输出含 <code>(</code></td>
+            </tr>
+            <tr>
+              <td><code>all_options_long</code></td>
+              <td>长选项组合</td>
+              <td>退出码=0，输出含 <code>(</code></td>
+            </tr>
+            <tr>
+              <td><code>invalid_option</code></td>
+              <td>无效选项</td>
+              <td>退出码≠0，输出含 usage</td>
+            </tr>
+          </tbody>
+        </table>
+        <h4>总结</h4>
+        <p>TestKit 接入的关键步骤：</p>
+        <ol start="1">
+          <li><strong>Makefile 配置</strong>：</li>
+        </ol>
+        <ul>
+          <li>
+            <p>添加 <code>-I../testkit</code> 包含路径</p>
+            <ul>
+              <li>编译测试程序时链接 <code>testkit.c</code> 和 <code>pstree.c</code></li>
+              <li>设置 <code>test</code> 目标运行 <code>TK_VERBOSE=1 ./pstree-test</code></li>
+            </ul>
+          </li>
+        </ul>
+        <ol start="2">
+          <li>
+            <p><strong>编写测试用例</strong>：</p>
+            <ul>
+              <li><code>#include &lt;testkit.h></code></li>
+              <li>使用 <code>SystemTest</code> 宏定义测试</li>
+              <li>在测试体内使用 <code>tk_assert</code> 断言</li>
+            </ul>
+          </li>
+          <li>
+            <p><strong>自动注册机制</strong>：</p>
+            <ul>
+              <li>构造函数在 <code>main()</code> 前执行</li>
+              <li><code>tk_add_test()</code> 将测试加入全局数组</li>
+              <li>环境变量控制是否启用测试</li>
+            </ul>
+          </li>
+        </ol>
+        <h2>实验总结</h2>
+        <p>本次 jyy 操作系统课程 M2 实验成功实现了一个功能完整的 <code>pstree</code> 命令行工具，能够以树状结构展示 Linux 系 统中的进程父子关系。通过深入理解 <code>/proc</code> 文件系统，我设计了高效的进程信息读取机制，构建了基于 <code>Process</code>结构体的进程树数据模型，并实现了灵活的命令行参数解析系统，支持 <code>-p/--show-pids</code>（显示进程号）、<code>-n/--numeric-sort</code>（按 PID 排序）和 <code>-V/--version</code>（显示版本信息）等核心功能。</p>
+        <p>在实现过程中，我采用了模块化的设计思路：首先通过遍历 <code>/proc</code> 目录读取所有进程的 PID、PPID 和进程名信息 ；然后根据父子关系构建进程树，其中根进程通常为 PID 1 的 systemd；接着根据用户指定的选项对子进程进行排序 并格式化输出。打印逻辑采用递归方式，通过缩进和连接符（如 <code>+--</code> 和 <code>|</code>）清晰地展现树状层次结构。</p>
+        <p>为了确保代码质量和功能正确性，我集成了课程提供的 TestKit 测试框架，编写了覆盖所有功能点和边界情况的系统测试用例，包括基本功能、单个选项、选项组合以及错误处理等场景。通过这套完整的测试体系，有效验证了程序在各种使用场景下的稳定性和正确性。</p>
+        <p>这个实验不仅加深了我对 Linux 进程管理和 <code>/proc</code> 文件系统的理解，也锻炼了我在系统编程、数据结构设计、命 令行工具开发和测试驱动开发等方面的实践能力，为后续更复杂的系统级编程奠定了坚实基础。</p>
+      </section>
+    </article>
+  </body>
+</html>

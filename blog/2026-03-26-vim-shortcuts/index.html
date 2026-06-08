@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vim 常见快捷键收集</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.8.0/tufte.min.css">
+    <link rel="stylesheet" href="/assets/tufted.css">
+    <link rel="stylesheet" href="/assets/custom.css">
+  </head>
+  <body>
+    <header>
+      <nav><a href="/">Home</a><a href="/docs/">Docs</a><a href="/blog/">Blog</a><a href="/cv/">CV</a></nav>
+    </header>
+    <article>
+      <section>
+        <h2>Vim 常见快捷键收集</h2>
+        <p>此处收集个人平时可能用到的一些 Vim 常用快捷键以备随时查阅。</p>
+        <h4>1. 入门级别（基础生存技能，日常编辑够用）</h4>
+        <p>按键类型：移动、插入、删除、保存退出、简单搜索。</p>
+        <p><strong>模式切换与基本操作：</strong></p>
+        <ul>
+          <li><strong>Esc</strong> 或 <strong>Ctrl + [</strong>：退出 Insert 模式，返回 Normal</li>
+          <li><strong>i</strong>：在光标前进入 Insert 模式（插入）</li>
+          <li><strong>I</strong>：行首插入</li>
+          <li><strong>a</strong>：光标后追加</li>
+          <li><strong>A</strong>：行尾追加</li>
+          <li><strong>o</strong>：当前行下方新开一行并插入</li>
+          <li><strong>O</strong>：当前行上方新开一行并插入</li>
+          <li><strong>:w</strong>：保存文件</li>
+          <li><strong>:q</strong>：退出（未修改时）</li>
+          <li><strong>:q!</strong>：强制退出不保存</li>
+          <li><strong>:wq</strong> 或 <strong>ZZ</strong>：保存并退出</li>
+          <li><strong>u</strong>：撤销（Undo）</li>
+          <li><strong>Ctrl + r</strong>：重做（Redo）</li>
+          <li><strong>.</strong>：重复上一个命令</li>
+        </ul>
+        <p><strong>光标移动（Normal 模式）：</strong></p>
+        <ul>
+          <li><strong>h j k l</strong>：左 下 上 右（推荐替代方向键）</li>
+          <li><strong>w / b</strong>：下一个/上一个单词开头</li>
+          <li><strong>e / ge</strong>：单词结尾</li>
+          <li><strong>0 / ^</strong>：行首（^ 为非空白字符开头）</li>
+          <li><strong>$</strong>：行尾</li>
+          <li><strong>gg / G</strong>：文件第一行 / 最后一行</li>
+          <li><strong>Ctrl + f / b</strong>：向下/向上翻页</li>
+          <li><strong>Ctrl + d / u</strong>：向下/向上半页</li>
+        </ul>
+        <p><strong>编辑与删除：</strong></p>
+        <ul>
+          <li><strong>x</strong>：删除当前字符</li>
+          <li><strong>dd</strong>：删除当前行</li>
+          <li><strong>dw</strong>：删除当前单词</li>
+          <li><strong>yy</strong>（或 <strong>Y</strong>）：复制当前行（yank）</li>
+          <li><strong>p / P</strong>：粘贴到光标后/前</li>
+          <li><strong>r</strong>：替换单个字符（不进入 Insert）</li>
+          <li><strong>J</strong>：合并当前行与下一行</li>
+        </ul>
+        <p><strong>搜索与替换：</strong></p>
+        <ul>
+          <li><strong>/</strong>：向前搜索（输入后按 Enter）</li>
+          <li><strong>?</strong>：向后搜索</li>
+          <li><strong>n / N</strong>：下一个/上一个匹配</li>
+          <li><strong>:s/old/new</strong>：当前行替换（加 <strong>g</strong> 全行替换，如 <strong>:s/old/new/g</strong>）</li>
+          <li><strong>:%s/old/new/g</strong>：全文替换</li>
+        </ul>
+        <p><strong>其他常用：</strong></p>
+        <ul>
+          <li><strong>:set number</strong>（或 <strong>:set nu</strong>）：显示行号</li>
+          <li><strong>:set nonumber</strong>：隐藏行号</li>
+          <li><strong>:help 关键字</strong>：打开帮助（如 <strong>:help w</strong>）</li>
+        </ul>
+        <p>这些足够应对 80% 的日常编辑。记住“动词 + 名词”思维：如 <strong>d w</strong>（删除单词）、<strong>y y</strong>（复制行）。</p>
+        <h4>2. 进阶级别（效率提升，常用文本对象与窗口）</h4>
+        <p>按键类型：掌握文本对象（text objects）和多窗口/缓冲区操作，能显著提高速度。</p>
+        <p><strong>文本对象（非常强大，与操作符结合使用，如 d/ciw）：</strong></p>
+        <ul>
+          <li><strong>iw / aw</strong>：inner word / a word（词内/词，包括空格）</li>
+          <li><strong>i( / a(</strong> 或 <strong>i) / a)</strong>：括号内/外</li>
+          <li><strong>i{ / a{</strong>、<strong>i[ / a[</strong> 等：各种括号/引号内/外</li>
+          <li><strong>it / at</strong>：HTML/XML 标签内/外</li>
+          <li><strong>ip / ap</strong>：段落内/外</li>
+        </ul>
+        <p>示例：</p>
+        <ul>
+          <li><strong>ciw</strong>：修改当前单词（change inner word）</li>
+          <li><strong>di(</strong>：删除括号内内容</li>
+          <li><strong>yi“</strong>：复制双引号内内容</li>
+          <li><strong>va{</strong>：可视选中大括号外内容</li>
+        </ul>
+        <p><strong>Visual 模式（选中操作）：</strong></p>
+        <ul>
+          <li><strong>v</strong>：字符可视模式</li>
+          <li><strong>V</strong>：行可视模式</li>
+          <li><strong>Ctrl + v</strong>：块可视模式（列编辑神器）</li>
+          <li>在 Visual 中可配合 <strong>d</strong> 删除、<strong>y</strong> 复制、<strong>></strong> 缩进等</li>
+        </ul>
+        <p><strong>窗口与缓冲区（多文件编辑）：</strong></p>
+        <ul>
+          <li><strong>:sp</strong> 或 <strong>:split</strong>：水平分割窗口</li>
+          <li><strong>:vs</strong> 或 <strong>:vsplit</strong>：垂直分割</li>
+          <li><strong>Ctrl + w w</strong>：切换窗口</li>
+          <li><strong>Ctrl + w q</strong>：关闭当前窗口</li>
+          <li><strong>:e 文件名</strong>：打开/切换文件（缓冲区）</li>
+          <li><strong>:bn / :bp</strong>：下一个/上一个缓冲区</li>
+          <li><strong>:ls</strong>：列出所有缓冲区</li>
+          <li><strong>:bd</strong>：关闭当前缓冲区</li>
+        </ul>
+        <p><strong>高级移动与标记：</strong></p>
+        <ul>
+          <li><strong>H / M / L</strong>：屏幕顶部/中间/底部</li>
+          <li><strong>{ / }</strong>：上一个/下一个段落</li>
+          <li><strong>%</strong>：跳转匹配括号</li>
+          <li><strong>m{a-z}</strong>：设置标记（如 <strong>ma</strong>）</li>
+          <li><strong>’a</strong>：跳转到标记 a 的行首</li>
+          <li><strong>``</strong>：回到上一个跳转位置</li>
+          <li><strong>Ctrl + o / Ctrl + i</strong>：跳转历史前后</li>
+        </ul>
+        <p><strong>搜索替换进阶：</strong></p>
+        <ul>
+          <li><strong>:range s/old/new/g</strong>（range 如 <strong>1,10</strong> 或 <strong>%</strong> 全文件）</li>
+          <li><strong>:g/pattern/command</strong>：对匹配 pattern 的行执行 command（如 <strong>:g/foo/d</strong> 删除含 foo 的行）</li>
+          <li><strong>* / #</strong>：搜索光标下单词（向前/向后）</li>
+        </ul>
+        <p><strong>其他实用：</strong></p>
+        <ul>
+          <li><strong>>> / &lt;&lt;</strong>：缩进/反缩进当前行</li>
+          <li><strong>> / &lt;</strong> 在 Visual 模式下缩进选中块</li>
+          <li><strong>:set hlsearch</strong>：高亮搜索结果</li>
+        </ul>
+        <h4>3. 专家级别（高级技巧，宏、寄存器、快速修复等）</h4>
+        <p>按键类型：这些适合重度用户，能实现复杂批量操作和自定义。</p>
+        <p><strong>宏（Macro，录制重复操作）：</strong></p>
+        <ul>
+          <li><strong>qa</strong>：开始录制宏到寄存器 a（q 停止录制）</li>
+          <li><strong>@a</strong>：执行宏 a</li>
+          <li><strong>@@</strong>：重复上一个宏</li>
+          <li>可录制复杂序列，如格式化多行代码</li>
+        </ul>
+        <p><strong>寄存器（Registers，高级复制粘贴）：</strong></p>
+        <ul>
+          <li><strong>“ayy</strong>：复制到寄存器 a（“a 后跟 yank）</li>
+          <li><strong>“ap</strong>：从寄存器 a 粘贴</li>
+          <li>*<em>“+y / “<em>y</em></em>：复制到系统剪贴板（需 +clipboard 支持）</li>
+          <li><strong>:registers</strong>：查看所有寄存器</li>
+        </ul>
+        <p><strong>快速修复列表（Quickfix）与搜索多文件：</strong></p>
+        <ul>
+          <li>**:vimgrep /pattern/ ** 或 <strong>:grep</strong>：在多文件中搜索</li>
+          <li><strong>:copen</strong>：打开 quickfix 列表</li>
+          <li><strong>:cnext / :cprev</strong>：跳转下一个/上一个匹配</li>
+        </ul>
+        <p><strong>全局命令与范围：</strong></p>
+        <ul>
+          <li><strong>:g</strong>（global）：强大批量操作</li>
+          <li><strong>:norm command</strong>：对范围行执行 Normal 命令（如 <strong>:%norm g~~</strong> 大小写翻转全文件）</li>
+          <li><strong>:set list</strong>：显示不可见字符（如 Tab、空格）</li>
+        </ul>
+        <p><strong>插入模式高级技巧：</strong></p>
+        <ul>
+          <li><strong>Ctrl + r “</strong>：插入默认寄存器内容</li>
+          <li><strong>Ctrl + r =</strong>：插入 Vim 表达式计算结果（如 <strong>Ctrl + r =2+3</strong>）</li>
+          <li><strong>Ctrl + n / p</strong>：自动补全（单词）</li>
+        </ul>
+        <p><strong>其他专家操作：</strong></p>
+        <ul>
+          <li><strong>:set paste</strong>：进入粘贴模式（避免自动缩进问题）</li>
+          <li><strong>gv</strong>：重新选中上一次 Visual 区域</li>
+          <li><strong>:marks</strong>：查看所有标记</li>
+          <li><strong>:changes</strong>：查看更改历史</li>
+          <li><strong>:tabnew / :tabn / :tabp</strong>：标签页管理</li>
+          <li><strong>Ctrl + a / Ctrl + x</strong>：递增/递减光标下数字</li>
+          <li><strong>:diffthis</strong>：进入 diff 模式比较文件</li>
+        </ul>
+        <p><strong>自定义与配置提示（.vimrc）：</strong></p>
+        <ul>
+          <li>常用设置：<strong>set number relativenumber</strong>（相对行号）、<strong>set ignorecase smartcase</strong>（智能搜索）、<strong>syntax on</strong> 等。</li>
+          <li>映射快捷键：如 <strong>nnoremap w :w</strong>（leader 通常为空格或 \）。</li>
+        </ul>
+      </section>
+    </article>
+  </body>
+</html>
